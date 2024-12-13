@@ -56,10 +56,8 @@ func TablePrint(tableName string, data []map[string]string) {
 				row["TYPE"],
 				row["RESOURCE_NAME"],
 				row["CONTAINER_NAME"],
-				row["CPU_USED"],
 				row["CPU_LIMIT"],
 				row["CPU_REQUESTS"],
-				row["MEMORY_USED"],
 				row["MEMORY_LIMIT"],
 				row["MEMORY_REQUESTS"],
 			})
