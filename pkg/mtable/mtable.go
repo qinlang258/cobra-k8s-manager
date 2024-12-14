@@ -29,7 +29,7 @@ var TopTatleColumns []string = []string{
 	"NAMESPACE",
 	"TYPE",
 	"RESOURCE_NAME",
-	"CONTAINER_NAME",
+	"POD_NAME",
 	"CPU_USED",
 	"MEMORY_USED",
 }
@@ -82,6 +82,7 @@ func TablePrint(tableName string, data []map[string]string) {
 				row["NAMESPACE"],
 				row["TYPE"],
 				row["RESOURCE_NAME"],
+				row["POD_NAME"],
 				row["CPU_USED"],
 				row["MEMORY_USED"],
 			})

@@ -33,61 +33,10 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace, name st
 			for _, values := range deploymentLtems.Items {
 				deployMap := make(map[string]string)
 				deployMap["NAMESPACE"] = values.Namespace
-				deployMap["TYPE"] = "deployment"
-				deployMap["RESOURCE_NAME"] = values.Name
+				deployMap["TYPE"] = values.OwnerReferences[0].Kind
+				deployMap["RESOURCE_NAME"] = values.OwnerReferences[0].Name
+				deployMap["POD_NAME"] = values.Name
 
-				fmt.Println(values.Name)
-				podMetrics, _ := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
-				// 获取 CPU 和内存使用数据
-				for i := 0; i < len(podMetrics.Containers); i++ {
-					cpuUsage := podMetrics.Containers[i].Usage.Cpu()
-					memoryUsage := podMetrics.Containers[i].Usage.Memory()
-					usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
-					usedCpuCores := float64(cpuUsage.MilliValue())
-
-					deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
-					deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fm", usedMemoryMi)
-				}
-
-				ItemList = append(ItemList, deployMap)
-
-			}
-
-			stsItems, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
-			if err != nil {
-				klog.Error(ctx, err.Error())
-			}
-			for _, values := range stsItems.Items {
-				deployMap := make(map[string]string)
-				deployMap["NAMESPACE"] = values.Namespace
-				deployMap["TYPE"] = "statefulsets"
-				deployMap["RESOURCE_NAME"] = values.Name
-
-				podMetrics, _ := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
-				// 获取 CPU 和内存使用数据
-				for i := 0; i < len(podMetrics.Containers); i++ {
-					cpuUsage := podMetrics.Containers[i].Usage.Cpu()
-					memoryUsage := podMetrics.Containers[i].Usage.Memory()
-					usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
-					usedCpuCores := float64(cpuUsage.MilliValue())
-
-					deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
-					deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fm", usedMemoryMi)
-				}
-
-				ItemList = append(ItemList, deployMap)
-
-			}
-
-			dsItems, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
-			if err != nil {
-				klog.Error(ctx, err.Error())
-			}
-			for _, values := range dsItems.Items {
-				deployMap := make(map[string]string)
-				deployMap["NAMESPACE"] = values.Namespace
-				deployMap["TYPE"] = "daemonsets"
-				deployMap["RESOURCE_NAME"] = values.Name
 				podMetrics, _ := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
 				// 获取 CPU 和内存使用数据
 				for i := 0; i < len(podMetrics.Containers); i++ {
