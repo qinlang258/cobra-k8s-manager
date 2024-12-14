@@ -48,6 +48,7 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(imageCmd)
 	rootCmd.AddCommand(resourceCmd)
+	rootCmd.AddCommand(topCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&Kubeconfig, "kubeconfig", "", "/root/.kube/config", "请输入 kubeconfig的文件路径")
 	rootCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "all", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
