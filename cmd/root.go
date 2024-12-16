@@ -4,10 +4,10 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"k8s.io/klog/v2"
 )
 
 // var cfgFile string
@@ -32,7 +32,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(command) == 0 {
 			cmd.Help()
-			fmt.Println("必须输入想要查询的内容")
+			klog.Error("必须输入想要查询的内容")
 			return
 		}
 	},
@@ -59,6 +59,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 	rootCmd.PersistentFlags().StringVarP(&Name, "name", "", "", "请输入资源的name信息")
 	rootCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
-	rootCmd.PersistentFlags().StringVarP(&Analysis, "analysis", "", "a", "请输入想分析的Node名字")
+	rootCmd.PersistentFlags().StringVarP(&Analysis, "analysis", "", "", "请输入想分析的Node名字")
 
 }
