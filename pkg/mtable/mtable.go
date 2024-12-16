@@ -35,6 +35,7 @@ var TopTatleColumns []string = []string{
 }
 
 var AnalysisNodeTatleColumns []string = []string{
+	"NODE_NAME",
 	"NAMESPACE",
 	"POD_NAME",
 	"CPU_USED",
@@ -139,6 +140,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
+				row["NODE_NAME"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
 				row["CPU_USED"],

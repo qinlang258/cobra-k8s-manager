@@ -40,6 +40,7 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 	for _, pod := range podList.Items {
 		if pod.Spec.NodeName == nodeName {
 			deployMap := make(map[string]string)
+			deployMap["NODE_NAME"] = nodeName
 			deployMap["NAMESPACE"] = pod.Namespace
 			deployMap["POD_NAME"] = pod.Name
 
