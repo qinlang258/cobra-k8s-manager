@@ -12,14 +12,10 @@ import (
 
 // analysisCmd represents the analysis command
 var analysisCmd = &cobra.Command{
-	Use:   "analysis",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:     "analysis",
+	Short:   "分析某一节点的资源使用情况",
+	Long:    "分析某一节点的资源使用情况",
+	Example: "./k8s-manager analysis <节点名>",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		kube.AnalysisNode(ctx, Kubeconfig, Node)
@@ -27,15 +23,5 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	//rootCmd.AddCommand(analysisCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// analysisCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// analysisCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

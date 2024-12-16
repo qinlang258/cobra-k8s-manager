@@ -9,7 +9,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace, name string) {
+func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace string) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(err)
@@ -125,7 +125,7 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace, name
 
 		}
 
-	case "deployment":
+	case "deployment", "deploy":
 		if namespace != "all" {
 			items, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 			if err != nil {
@@ -165,7 +165,7 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace, name
 				}
 			}
 		}
-	case "sts":
+	case "sts", "statefulsets":
 		if namespace != "all" {
 			items, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
 			if err != nil {
@@ -205,7 +205,7 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace, name
 				}
 			}
 		}
-	case "ds":
+	case "ds", "daemonsets":
 		if namespace != "all" {
 			items, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
 			if err != nil {

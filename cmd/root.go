@@ -14,13 +14,13 @@ import (
 var command string
 
 var (
-	Workload, Namespace, Name, Kubeconfig, Node string
+	Workload, Namespace, Name, Kubeconfig, Node, Analysis string
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "k8s-manager",
-	Short: "A brief description of your application",
+	Short: "获取K8S的资源使用情况",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
@@ -59,6 +59,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 	rootCmd.PersistentFlags().StringVarP(&Name, "name", "", "", "请输入资源的name信息")
 	rootCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
-	rootCmd.PersistentFlags().StringVarP(&Node, "analysis", "", "a", "请输入想分析的Node名字")
+	rootCmd.PersistentFlags().StringVarP(&Analysis, "analysis", "", "a", "请输入想分析的Node名字")
 
 }
