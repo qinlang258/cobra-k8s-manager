@@ -13,7 +13,7 @@ import (
 // resourceCmd represents the resource command
 var resourceCmd = &cobra.Command{
 	Use:   "resource",
-	Short: "A brief description of your command",
+	Short: "获取pod资源的相关 Limit与Resource信息",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -27,6 +27,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(resourceCmd)
+	//rootCmd.AddCommand(resourceCmd)
 
 }

@@ -13,7 +13,7 @@ import (
 // imageCmd represents the image command
 var imageCmd = &cobra.Command{
 	Use:   "image",
-	Short: "A brief description of your command",
+	Short: "获取镜像信息",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -31,5 +31,5 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(imageCmd)
+	//rootCmd.AddCommand(imageCmd)
 }

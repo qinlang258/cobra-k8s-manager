@@ -34,6 +34,29 @@ var TopTatleColumns []string = []string{
 	"MEMORY_USED",
 }
 
+var AnalysisNodeTatleColumns []string = []string{
+	"NAMESPACE",
+	"POD_NAME",
+	"CPU_USED",
+	"CPU_PERCENT",
+	"MEMORY_USED",
+	"MEMORY_PERCENT",
+}
+
+var NodeTatleColumns []string = []string{
+	"NODE_NAME",
+	"NODE_ADDRESS",
+	"OS_IMAGE",
+	"KUBELET_VERSION",
+	"CONTAINER_RUNTIME_VERSION",
+	"CPU_USED",
+	"CPU_TOTAL",
+	"CPU_PERCENT",
+	"MEMORY_USED",
+	"MEMORY_TOTAL",
+	"MEMORY_PERCENT",
+}
+
 func TablePrint(tableName string, data []map[string]string) {
 	// Use tablewriter to create a nice formatted table
 	table := tablewriter.NewWriter(os.Stdout)
@@ -87,8 +110,46 @@ func TablePrint(tableName string, data []map[string]string) {
 				row["MEMORY_USED"],
 			})
 		}
+	} else if tableName == "node" {
+		TatleColumns = NodeTatleColumns
+
+		table.SetHeader(TatleColumns) // Table header
+
+		// Add rows to the table
+		for _, row := range data {
+			table.Append([]string{
+				row["NODE_NAME"],
+				row["NODE_ADDRESS"],
+				row["OS_IMAGE"],
+				row["KUBELET_VERSION"],
+				row["CONTAINER_RUNTIME_VERSION"],
+				row["CPU_USED"],
+				row["CPU_TOTAL"],
+				row["CPU_PERCENT"],
+				row["MEMORY_USED"],
+				row["MEMORY_TOTAL"],
+				row["MEMORY_PERCENT"],
+			})
+		}
+	} else if tableName == "analysis" {
+		TatleColumns = AnalysisNodeTatleColumns
+
+		table.SetHeader(TatleColumns) // Table header
+
+		// Add rows to the table
+		for _, row := range data {
+			table.Append([]string{
+				row["NAMESPACE"],
+				row["POD_NAME"],
+				row["CPU_USED"],
+				row["CPU_PERCENT"],
+				row["MEMORY_USED"],
+				row["MEMORY_PERCENT"],
+			})
+		}
 	}
 
 	// Render the table
 	table.Render()
+
 }

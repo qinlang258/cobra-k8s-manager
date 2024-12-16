@@ -31,13 +31,17 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace, name st
 				klog.Error(ctx, err.Error())
 			}
 			for _, values := range deploymentLtems.Items {
+
 				deployMap := make(map[string]string)
 				deployMap["NAMESPACE"] = values.Namespace
 				deployMap["TYPE"] = values.OwnerReferences[0].Kind
 				deployMap["RESOURCE_NAME"] = values.OwnerReferences[0].Name
 				deployMap["POD_NAME"] = values.Name
 
-				podMetrics, _ := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
+				podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
+				if err != nil {
+					klog.Error(ctx, err.Error())
+				}
 				// 获取 CPU 和内存使用数据
 				for i := 0; i < len(podMetrics.Containers); i++ {
 					cpuUsage := podMetrics.Containers[i].Usage.Cpu()
