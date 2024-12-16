@@ -14,12 +14,7 @@ import (
 var resourceCmd = &cobra.Command{
 	Use:   "resource",
 	Short: "获取pod资源的相关 Limit与Resource信息",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  "获取pod资源的相关 Limit与Resource信息",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name)
