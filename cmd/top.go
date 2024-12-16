@@ -13,7 +13,7 @@ import (
 // topCmd represents the top command
 var topCmd = &cobra.Command{
 	Use:   "top",
-	Short: "A brief description of your command",
+	Short: "获取容器的实际使用资源开销",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -27,6 +27,6 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	rootCmd.AddCommand(topCmd)
+	//rootCmd.AddCommand(topCmd)
 
 }

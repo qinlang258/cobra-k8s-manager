@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -13,7 +14,7 @@ import (
 var command string
 
 var (
-	Workload, Namespace, Name, Kubeconfig string
+	Workload, Namespace, Name, Kubeconfig, Node string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -31,6 +32,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(command) == 0 {
 			cmd.Help()
+			fmt.Println("必须输入想要查询的内容")
 			return
 		}
 	},
@@ -49,9 +51,14 @@ func init() {
 	rootCmd.AddCommand(imageCmd)
 	rootCmd.AddCommand(resourceCmd)
 	rootCmd.AddCommand(topCmd)
+	rootCmd.AddCommand(nodeCmd)
+	rootCmd.AddCommand(analysisCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&Kubeconfig, "kubeconfig", "", "/root/.kube/config", "请输入 kubeconfig的文件路径")
 	rootCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "all", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
 	rootCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 	rootCmd.PersistentFlags().StringVarP(&Name, "name", "", "", "请输入资源的name信息")
+	rootCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
+	rootCmd.PersistentFlags().StringVarP(&Node, "analysis", "", "a", "请输入想分析的Node名字")
+
 }
