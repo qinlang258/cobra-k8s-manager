@@ -10,6 +10,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	Prometheus string
+)
+
 // resourceCmd represents the resource command
 var resourceCmd = &cobra.Command{
 	Use:   "resource",
@@ -17,11 +21,21 @@ var resourceCmd = &cobra.Command{
 	Long:  "获取pod资源的相关 Limit与Resource信息",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name)
+
+		//如果需要输出prometheus实际开销
+		if Prometheus != "" {
+			kube.AnalysisResourceAndLimit(ctx, Kubeconfig, Workload, Namespace, Prometheus)
+		} else {
+			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name)
+		}
 	},
 }
 
+/*
+可以供执行命令主机访问的 prometheus的地址 http://192.168.44.134:20248/
+*/
+
 func init() {
 	//rootCmd.AddCommand(resourceCmd)
-
+	resourceCmd.PersistentFlags().StringVarP(&Prometheus, "url", "u", "", "需要分析的话，填写prometheus的地址，仅支持当前集群的状态查询")
 }

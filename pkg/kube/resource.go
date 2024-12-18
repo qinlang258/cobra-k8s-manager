@@ -2,12 +2,51 @@ package kube
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
 	"k8s-manager/pkg/mtable"
+	"k8s-manager/pkg/prometheusplugin"
 
+	prov1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"github.com/prometheus/common/model"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
 )
+
+const (
+	//查询过去7天的平均值
+	podMemoryUsageTemplate = "sum(avg_over_time(container_memory_working_set_bytes{pod=\"%s\",namespace=\"%s\"}[7d]))"
+	//podCpuUsageTemplate    = "sum(avg_over_time(container_cpu_usage_seconds_total{pod=\"%s\",namespace=\"%s\"}[7d]))" //获取
+
+	//RSS内存
+	RssMemoryUsageTemplate = "avg(avg_over_time(container_memory_rss {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
+	podCpuUsageTemplate    = "avg(avg_over_time(container_cpu_usage_seconds_total {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
+)
+
+func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
+	var num_data string
+
+	if err != nil {
+		fmt.Println("prometheus没有获取到数据,请检查Prometheus是否能正常访问?")
+		return ""
+	}
+
+	if result.String() == "" {
+		return "0"
+	}
+
+	data := result.String()
+
+	//提取 => 0.0031342189920170885 @[1711701880.602
+	s1 := strings.Split(data, "=>")
+	s2 := strings.Split(s1[1], "@")
+	num_data = strings.ReplaceAll(s2[0], " ", "")
+
+	return num_data
+}
 
 func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespace, name string) {
 	client, err := NewClientset(kubeconfig)
@@ -295,4 +334,61 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 	}
 
 	mtable.TablePrint("resource", ItemList)
+}
+
+func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespace, prometheusUrl string) {
+	client, err := NewClientset(kubeconfig)
+	if err != nil {
+		klog.Error(ctx, err.Error())
+		return
+	}
+
+	prometheus_client := prometheusplugin.NewProme(prometheusUrl, 10)
+	//ItemList := make([]map[string]string, 0)
+
+	switch namespace {
+	case "all":
+		nsList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+		if err != nil {
+			klog.Error(ctx, err.Error())
+		}
+
+		for _, ns := range nsList.Items {
+			podList, err := client.CoreV1().Pods(ns.Name).List(ctx, metav1.ListOptions{})
+			if err != nil {
+				klog.Error(ctx, err.Error())
+			}
+			//获取所有pod的资源信息
+			for _, pod := range podList.Items {
+				for i := 0; i < len(pod.Spec.Containers); i++ {
+					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
+					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
+					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+
+					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+					fmt.Println(memorySql)
+					fmt.Println(cpuSql)
+
+					strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
+					memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
+					if err1 != nil {
+						klog.Error(ctx, err1.Error())
+					}
+
+					strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
+					cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
+					if err != nil {
+						// Handle error if conversion fails
+						klog.Error(ctx, err.Error())
+					}
+
+					fmt.Println("Pod：", pod.Name, "Container：", pod.Spec.Containers[i].Name, "CPU限制：", cpuLimit, "CPU需求：", cpuRequets, "内存限制：", memoryLimit, "内存需求：", memoryRequests)
+					fmt.Println("Pod：", pod.Name, "Container：", pod.Spec.Containers[i].Name, "CPU使用：", cpuSize, "内存使用：", memorySize)
+				}
+
+			}
+		}
+	}
 }
