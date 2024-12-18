@@ -35,8 +35,8 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace string) 
 				if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = values.OwnerReferences[0].Kind
-					deployMap["RESOURCE_NAME"] = values.OwnerReferences[0].Name
+					deployMap["资源类型"] = values.OwnerReferences[0].Kind
+					deployMap["资源名"] = values.OwnerReferences[0].Name
 					deployMap["POD_NAME"] = values.Name
 
 					podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(ctx, values.Name, metav1.GetOptions{})
@@ -52,8 +52,8 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace string) 
 						usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
-						deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
-						deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fm", usedMemoryMi)
+						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -76,8 +76,8 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace string) 
 					if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = values.OwnerReferences[0].Kind
-						deployMap["RESOURCE_NAME"] = values.OwnerReferences[0].Name
+						deployMap["资源类型"] = values.OwnerReferences[0].Kind
+						deployMap["资源名"] = values.OwnerReferences[0].Name
 						deployMap["POD_NAME"] = values.Name
 
 						// 使用正确的命名空间
@@ -94,8 +94,8 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace string) 
 							usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 							usedCpuCores := float64(cpuUsage.MilliValue())
 
-							deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
-							deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fm", usedMemoryMi)
+							deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+							deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 						}
 
 						ItemList = append(ItemList, deployMap)

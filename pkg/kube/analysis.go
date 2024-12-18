@@ -40,7 +40,7 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 	for _, pod := range podList.Items {
 		if pod.Spec.NodeName == nodeName {
 			deployMap := make(map[string]string)
-			deployMap["NODE_NAME"] = nodeName
+			deployMap["节点名"] = nodeName
 			deployMap["NAMESPACE"] = pod.Namespace
 			deployMap["POD_NAME"] = pod.Name
 
@@ -61,26 +61,26 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 					usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 					usedCpuCores := float64(cpuUsage.MilliValue())
 
-					deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
+					deployMap["当前已使用的内存CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
 					deployMap["CPU_PERCENT"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
-					deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fm", usedMemoryMi)
+					deployMap["当前已使用的内存内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 					deployMap["MEMORY_PERCENT"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
 				}
 			} else {
 				klog.Warning(ctx, fmt.Sprintf("Pod %s has no container metrics", pod.Name))
-				deployMap["CPU_USED"] = "N/A"
-				deployMap["MEMORY_USED"] = "N/A"
+				deployMap["当前已使用的内存CPU"] = "N/A"
+				deployMap["当前已使用的内存内存"] = "N/A"
 			}
 
 			ItemList = append(ItemList, deployMap)
 		}
 	}
 
-	// 按照 MEMORY_USED 倒序排列
+	// 按照 当前已使用的内存内存 倒序排列
 	sort.Slice(ItemList, func(i, j int) bool {
-		// 获取 MEMORY_USED 的数值部分
-		memI, errI := parseMemory(ItemList[i]["MEMORY_USED"])
-		memJ, errJ := parseMemory(ItemList[j]["MEMORY_USED"])
+		// 获取 当前已使用的内存内存 的数值部分
+		memI, errI := parseMemory(ItemList[i]["当前已使用的内存内存"])
+		memJ, errJ := parseMemory(ItemList[j]["当前已使用的内存内存"])
 
 		// 如果其中一个值是 "N/A" 或无法解析，则视为最小值
 		if errI != nil || errJ != nil {
@@ -93,7 +93,7 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 	mtable.TablePrint("analysis", ItemList)
 }
 
-// 辅助函数：解析 MEMORY_USED 字符串，返回数值
+// 辅助函数：解析 当前已使用的内存内存 字符串，返回数值
 func parseMemory(memStr string) (float64, error) {
 	// 去除 "m" 后缀并解析为浮动值
 	if strings.HasSuffix(memStr, "m") {

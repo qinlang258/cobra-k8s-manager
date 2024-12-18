@@ -32,12 +32,12 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
 
 	for _, values := range nodeList.Items {
 		deployMap := make(map[string]string)
-		deployMap["NODE_NAME"] = values.Name
-		deployMap["OS_IMAGE"] = values.Status.NodeInfo.OSImage
+		deployMap["节点名"] = values.Name
+		deployMap["OS镜像"] = values.Status.NodeInfo.OSImage
 
-		deployMap["KUBELET_VERSION"] = values.Status.NodeInfo.KubeletVersion
+		deployMap["Kubelet版本"] = values.Status.NodeInfo.KubeletVersion
 		deployMap["CONTAINER_RUNTIME_VERSION"] = values.Status.NodeInfo.ContainerRuntimeVersion
-		deployMap["NODE_ADDRESS"] = values.Status.Addresses[0].Address
+		deployMap["节点IP"] = values.Status.Addresses[0].Address
 
 		nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().Get(ctx, values.Name, metav1.GetOptions{})
 		if err != nil {
@@ -56,12 +56,12 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
 		usedCpuCores := float64(cpuUsage.MilliValue())
 		totalCpuCores := values.Status.Capacity.Cpu().MilliValue()
 
-		deployMap["CPU_USED"] = fmt.Sprintf("%.2fm", usedCpuCores)
-		deployMap["CPU_TOTAL"] = fmt.Sprintf("%dm", totalCpuCores)
+		deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+		deployMap["CPU总大小"] = fmt.Sprintf("%dm", totalCpuCores)
 		deployMap["CPU_PERCENT"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
-		deployMap["MEMORY_USED"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
-		deployMap["MEMORY_TOTAL"] = fmt.Sprintf("%.2fMi", totalMemoryMi)
-		deployMap["MEMORY_PERCENT"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
+		deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
+		deployMap["内存总大小"] = fmt.Sprintf("%.2fMi", totalMemoryMi)
+		deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
 		ItemList = append(ItemList, deployMap)
 	}
 

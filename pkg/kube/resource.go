@@ -18,12 +18,12 @@ import (
 
 const (
 	//查询过去7天的平均值
-	podMemoryUsageTemplate = "sum(avg_over_time(container_memory_working_set_bytes{pod=\"%s\",namespace=\"%s\"}[7d]))"
+	//podMemoryUsageTemplate = "sum(avg_over_time(container_memory_working_set_bytes{pod=\"%s\",namespace=\"%s\"}[7d]))"
 	//podCpuUsageTemplate    = "sum(avg_over_time(container_cpu_usage_seconds_total{pod=\"%s\",namespace=\"%s\"}[7d]))" //获取
 
 	//RSS内存
 	RssMemoryUsageTemplate = "avg(avg_over_time(container_memory_rss {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
-	podCpuUsageTemplate    = "avg(avg_over_time(container_cpu_usage_seconds_total {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
+	podCpuUsageTemplate    = "avg(avg_over_time(container_cpu_usage_seconds_total {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d]))"
 )
 
 func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
@@ -67,13 +67,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "deployment"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "deployment"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					ItemList = append(ItemList, deployMap)
 				}
@@ -87,13 +87,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "statefulsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "statefulsets"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					ItemList = append(ItemList, deployMap)
 				}
@@ -107,13 +107,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "daemonsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "daemonsets"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					ItemList = append(ItemList, deployMap)
 				}
@@ -133,13 +133,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "deployment"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "deployment"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -153,13 +153,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "statefulsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "statefulsets"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -173,13 +173,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "daemonsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "daemonsets"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -198,13 +198,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "deployment"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "deployment"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -222,13 +222,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "deployment"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "deployment"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -245,13 +245,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "statefulsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "statefulsets"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					ItemList = append(ItemList, deployMap)
 				}
@@ -270,13 +270,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "statefulsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "statefulsets"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -293,13 +293,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "daemonsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-					deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-					deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-					deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-					deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+					deployMap["资源类型"] = "daemonsets"
+					deployMap["资源名"] = values.Name
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+					deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+					deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+					deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					ItemList = append(ItemList, deployMap)
 				}
@@ -318,13 +318,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "daemonsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
-						deployMap["CPU_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
-						deployMap["MEMORY_LIMIT"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
-						deployMap["CPU_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
-						deployMap["MEMORY_REQUESTS"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
+						deployMap["资源类型"] = "daemonsets"
+						deployMap["资源名"] = values.Name
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["CPU限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Cpu().String()
+						deployMap["内存限制"] = values.Spec.Template.Spec.Containers[i].Resources.Limits.Memory().String()
+						deployMap["CPU所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Cpu().String()
+						deployMap["内存所需"] = values.Spec.Template.Spec.Containers[i].Resources.Requests.Memory().String()
 
 						ItemList = append(ItemList, deployMap)
 					}
@@ -344,7 +344,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 	}
 
 	prometheus_client := prometheusplugin.NewProme(prometheusUrl, 10)
-	//ItemList := make([]map[string]string, 0)
+	ItemList := make([]map[string]string, 0)
 
 	switch namespace {
 	case "all":
@@ -361,6 +361,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 			//获取所有pod的资源信息
 			for _, pod := range podList.Items {
 				for i := 0; i < len(pod.Spec.Containers); i++ {
+					deployMap := make(map[string]string)
 					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
 					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
@@ -368,8 +369,6 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 
 					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
-					fmt.Println(memorySql)
-					fmt.Println(cpuSql)
 
 					strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
 					memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
@@ -384,11 +383,68 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 						klog.Error(ctx, err.Error())
 					}
 
-					fmt.Println("Pod：", pod.Name, "Container：", pod.Spec.Containers[i].Name, "CPU限制：", cpuLimit, "CPU需求：", cpuRequets, "内存限制：", memoryLimit, "内存需求：", memoryRequests)
-					fmt.Println("Pod：", pod.Name, "Container：", pod.Spec.Containers[i].Name, "CPU使用：", cpuSize, "内存使用：", memorySize)
+					deployMap["NAMESPACE"] = pod.Namespace
+					deployMap["POD_NAME"] = pod.Name
+					deployMap["容器名"] = pod.Spec.Containers[i].Name
+					deployMap["CPU限制"] = cpuLimit
+					deployMap["CPU所需"] = cpuRequets
+					deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
+					deployMap["内存限制"] = memoryLimit
+					deployMap["内存所需"] = memoryRequests
+					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fm", memorySize)
+
+					ItemList = append(ItemList, deployMap)
+
 				}
 
 			}
 		}
+	default:
+		podList, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
+		if err != nil {
+			klog.Error(ctx, err.Error())
+		}
+		//获取所有pod的资源信息
+		for _, pod := range podList.Items {
+			for i := 0; i < len(pod.Spec.Containers); i++ {
+				deployMap := make(map[string]string)
+				cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
+				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
+				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+
+				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+				cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+
+				strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
+				memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
+				if err1 != nil {
+					klog.Error(ctx, err1.Error())
+				}
+
+				strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
+				cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
+				if err != nil {
+					// Handle error if conversion fails
+					klog.Error(ctx, err.Error())
+				}
+
+				deployMap["NAMESPACE"] = namespace
+				deployMap["POD_NAME"] = pod.Name
+				deployMap["容器名"] = pod.Spec.Containers[i].Name
+				deployMap["CPU限制"] = cpuLimit
+				deployMap["CPU所需"] = cpuRequets
+				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
+				deployMap["内存限制"] = memoryLimit
+				deployMap["内存所需"] = memoryRequests
+				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMI", memorySize)
+
+				ItemList = append(ItemList, deployMap)
+
+			}
+		}
 	}
+
+	mtable.TablePrint("analysis-cpu-memory", ItemList)
+
 }
