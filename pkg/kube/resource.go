@@ -23,7 +23,8 @@ const (
 
 	//RSS内存
 	RssMemoryUsageTemplate = "avg(avg_over_time(container_memory_rss {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
-	podCpuUsageTemplate    = "avg(avg_over_time(container_cpu_usage_seconds_total {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d]))"
+	podCpuUsageTemplate    = "sum(irate(container_cpu_usage_seconds_total{pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) * 1000"
+	// sum(irate(container_cpu_usage_seconds_total{pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d]))
 )
 
 func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
