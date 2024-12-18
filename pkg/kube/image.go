@@ -28,10 +28,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "deployment"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "deployment"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -44,10 +44,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "statefulsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "statefulsets"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -60,10 +60,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "daemonsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "daemonsets"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -82,10 +82,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "deployment"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "deployment"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}
@@ -98,10 +98,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "statefulsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "statefulsets"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}
@@ -114,10 +114,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "daemonsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "daemonsets"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}
@@ -135,10 +135,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "deployment"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "deployment"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -156,10 +156,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "deployment"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "deployment"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}
@@ -175,10 +175,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "statefulsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "statefulsets"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -196,10 +196,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "statefulsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "statefulsets"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}
@@ -215,10 +215,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 				for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["NAMESPACE"] = values.Namespace
-					deployMap["TYPE"] = "daemonsets"
-					deployMap["RESOURCE_NAME"] = values.Name
-					deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-					deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+					deployMap["资源类型"] = "daemonsets"
+					deployMap["资源名"] = values.Name
+					deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+					deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 					ItemList = append(ItemList, deployMap)
 				}
 			}
@@ -236,10 +236,10 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 					for i := 0; i < len(values.Spec.Template.Spec.Containers); i++ {
 						deployMap := make(map[string]string)
 						deployMap["NAMESPACE"] = values.Namespace
-						deployMap["TYPE"] = "daemonsets"
-						deployMap["RESOURCE_NAME"] = values.Name
-						deployMap["IMAGE"] = values.Spec.Template.Spec.Containers[i].Image
-						deployMap["CONTAINER_NAME"] = values.Spec.Template.Spec.Containers[i].Name
+						deployMap["资源类型"] = "daemonsets"
+						deployMap["资源名"] = values.Name
+						deployMap["镜像地址"] = values.Spec.Template.Spec.Containers[i].Image
+						deployMap["容器名"] = values.Spec.Template.Spec.Containers[i].Name
 						ItemList = append(ItemList, deployMap)
 					}
 				}

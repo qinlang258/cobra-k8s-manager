@@ -8,54 +8,66 @@ import (
 
 var ImageTatleColumns []string = []string{
 	"NAMESPACE",
-	"TYPE",
-	"RESOURCE_NAME",
-	"CONTAINER_NAME",
-	"IMAGE",
+	"资源类型",
+	"资源名",
+	"容器名",
+	"镜像地址",
 }
 
 var ResourceTatleColumns []string = []string{
 	"NAMESPACE",
-	"TYPE",
-	"RESOURCE_NAME",
-	"CONTAINER_NAME",
-	"CPU_LIMIT",
-	"CPU_REQUESTS",
-	"MEMORY_LIMIT",
-	"MEMORY_REQUESTS",
+	"资源类型",
+	"资源名",
+	"容器名",
+	"CPU限制",
+	"CPU所需",
+	"内存限制",
+	"内存所需",
 }
 
 var TopTatleColumns []string = []string{
 	"NAMESPACE",
-	"TYPE",
-	"RESOURCE_NAME",
+	"资源类型",
+	"资源名",
 	"POD_NAME",
-	"CPU_USED",
-	"MEMORY_USED",
+	"已使用的CPU",
+	"已使用的内存",
 }
 
 var AnalysisNodeTatleColumns []string = []string{
-	"NODE_NAME",
+	"节点名",
 	"NAMESPACE",
 	"POD_NAME",
-	"CPU_USED",
-	"CPU_PERCENT",
-	"MEMORY_USED",
-	"MEMORY_PERCENT",
+	"已使用的CPU",
+	"CPU使用占服务器的百分比",
+	"已使用的内存",
+	"内存使用占服务器的百分比",
 }
 
 var NodeTatleColumns []string = []string{
-	"NODE_NAME",
-	"NODE_ADDRESS",
-	"OS_IMAGE",
-	"KUBELET_VERSION",
+	"节点名",
+	"节点IP",
+	"OS镜像",
+	"Kubelet版本",
 	"CONTAINER_RUNTIME_VERSION",
-	"CPU_USED",
-	"CPU_TOTAL",
-	"CPU_PERCENT",
-	"MEMORY_USED",
-	"MEMORY_TOTAL",
-	"MEMORY_PERCENT",
+	"已使用的CPU",
+	"CPU总大小",
+	"CPU使用占服务器的百分比",
+	"已使用的内存",
+	"内存总大小",
+	"内存使用占服务器的百分比",
+}
+
+var AnalysisCpuMemory []string = []string{
+	"NAMESPACE",
+	"POD_NAME",
+	"容器名",
+	"CPU限制",
+	"CPU所需",
+	"最近7天已使用的CPU",
+	"内存限制",
+	"内存所需",
+	"最近7天已使用的内存",
 }
 
 func TablePrint(tableName string, data []map[string]string) {
@@ -71,10 +83,10 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["NAMESPACE"],
-				row["TYPE"],
-				row["RESOURCE_NAME"],
-				row["CONTAINER_NAME"],
-				row["IMAGE"],
+				row["资源类型"],
+				row["资源名"],
+				row["容器名"],
+				row["镜像地址"],
 			})
 		}
 	} else if tableName == "resource" {
@@ -86,13 +98,13 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["NAMESPACE"],
-				row["TYPE"],
-				row["RESOURCE_NAME"],
-				row["CONTAINER_NAME"],
-				row["CPU_LIMIT"],
-				row["CPU_REQUESTS"],
-				row["MEMORY_LIMIT"],
-				row["MEMORY_REQUESTS"],
+				row["资源类型"],
+				row["资源名"],
+				row["容器名"],
+				row["CPU限制"],
+				row["CPU所需"],
+				row["内存限制"],
+				row["内存所需"],
 			})
 		}
 	} else if tableName == "top" {
@@ -104,11 +116,11 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["NAMESPACE"],
-				row["TYPE"],
-				row["RESOURCE_NAME"],
+				row["资源类型"],
+				row["资源名"],
 				row["POD_NAME"],
-				row["CPU_USED"],
-				row["MEMORY_USED"],
+				row["当前已使用的CPU"],
+				row["当前已使用的内存"],
 			})
 		}
 	} else if tableName == "node" {
@@ -119,17 +131,17 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
-				row["NODE_NAME"],
-				row["NODE_ADDRESS"],
-				row["OS_IMAGE"],
-				row["KUBELET_VERSION"],
+				row["节点名"],
+				row["节点IP"],
+				row["OS镜像"],
+				row["Kubelet版本"],
 				row["CONTAINER_RUNTIME_VERSION"],
-				row["CPU_USED"],
-				row["CPU_TOTAL"],
-				row["CPU_PERCENT"],
-				row["MEMORY_USED"],
-				row["MEMORY_TOTAL"],
-				row["MEMORY_PERCENT"],
+				row["当前已使用的CPU"],
+				row["CPU总大小"],
+				row["CPU使用占服务器的百分比"],
+				row["当前已使用的内存"],
+				row["内存总大小"],
+				row["内存使用占服务器的百分比"],
 			})
 		}
 	} else if tableName == "analysis" {
@@ -140,13 +152,32 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
-				row["NODE_NAME"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
-				row["CPU_USED"],
-				row["CPU_PERCENT"],
-				row["MEMORY_USED"],
-				row["MEMORY_PERCENT"],
+				row["容器名"],
+				row["当前已使用的CPU"],
+				row["CPU使用占服务器的百分比"],
+				row["当前已使用的内存"],
+				row["内存使用占服务器的百分比"],
+			})
+		}
+	} else if tableName == "analysis-cpu-memory" {
+		TatleColumns = AnalysisCpuMemory
+
+		table.SetHeader(TatleColumns) // Table header
+
+		// Add rows to the table
+		for _, row := range data {
+			table.Append([]string{
+				row["NAMESPACE"],
+				row["POD_NAME"],
+				row["容器名"],
+				row["CPU限制"],
+				row["CPU所需"],
+				row["最近7天已使用的CPU"],
+				row["内存限制"],
+				row["内存所需"],
+				row["最近7天已使用的内存"],
 			})
 		}
 	}
