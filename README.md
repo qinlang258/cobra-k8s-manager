@@ -40,6 +40,9 @@ cobra-k8s-manager
 ./k8s-manager resource  
 2 获取指定namespace的limit 与 Requests大小
 ./k8s-manager resource -n <namespace>
+
+3 在prometheus查询最近七天的内存CPU使用情况
+go run main.go resource prometheus -u <prometheus访问地址>
 ```
 
 ## 5 top 获取指定namespace的资源使用情况
