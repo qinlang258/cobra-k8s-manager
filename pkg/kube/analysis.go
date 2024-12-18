@@ -76,8 +76,8 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 	// 按照 当前已使用的内存内存 倒序排列
 	sort.Slice(ItemList, func(i, j int) bool {
 		// 获取 当前已使用的内存内存 的数值部分
-		memI, errI := parseMemory(ItemList[i]["当前已使用的内存内存"])
-		memJ, errJ := parseMemory(ItemList[j]["当前已使用的内存内存"])
+		memI, errI := parseMemory(ItemList[i]["当前已使用的内存"])
+		memJ, errJ := parseMemory(ItemList[j]["当前已使用的内存"])
 
 		// 如果其中一个值是 "N/A" 或无法解析，则视为最小值
 		if errI != nil || errJ != nil {
