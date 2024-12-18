@@ -17,14 +17,9 @@ import (
 )
 
 const (
-	//查询过去7天的平均值
-	//podMemoryUsageTemplate = "sum(avg_over_time(container_memory_working_set_bytes{pod=\"%s\",namespace=\"%s\"}[7d]))"
-	//podCpuUsageTemplate    = "sum(avg_over_time(container_cpu_usage_seconds_total{pod=\"%s\",namespace=\"%s\"}[7d]))" //获取
-
 	//RSS内存
 	RssMemoryUsageTemplate = "avg(avg_over_time(container_memory_rss {pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) / 1024 / 1024"
 	podCpuUsageTemplate    = "sum(irate(container_cpu_usage_seconds_total{pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d])) * 1000"
-	// sum(irate(container_cpu_usage_seconds_total{pod=\"%s\",  container=\"%s\", namespace=\"%s\"}[7d]))
 )
 
 func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
@@ -447,5 +442,20 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 	}
 
 	mtable.TablePrint("analysis-cpu-memory", ItemList)
+
+}
+
+func TestPrometheus(ctx context.Context, pod_name, container_name, namespace, prometheusUrl string) {
+	prometheus_client := prometheusplugin.NewProme(prometheusUrl, 10)
+
+	//cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod_name, container_name, namespace)
+	cpuSql := "rate(container_cpu_usage_seconds_total{container!='',pod='prometheus-k8s-0'}[7d])"
+
+	result, _, err := prometheus_client.Client.Query(ctx, cpuSql, time.Now())
+	if err != nil {
+		klog.Error(ctx, err.Error())
+	}
+
+	fmt.Println(result)
 
 }
