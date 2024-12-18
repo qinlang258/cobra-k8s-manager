@@ -39,10 +39,6 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 	podList, _ := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{})
 	for _, pod := range podList.Items {
 		if pod.Spec.NodeName == nodeName {
-			deployMap := make(map[string]string)
-			deployMap["节点名"] = nodeName
-			deployMap["NAMESPACE"] = pod.Namespace
-			deployMap["POD_NAME"] = pod.Name
 
 			// 获取 Pod Metrics
 			podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
@@ -56,23 +52,24 @@ func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
 			if len(podMetrics.Containers) > 0 {
 				// 获取 CPU 和内存使用数据
 				for i := 0; i < len(podMetrics.Containers); i++ {
+					deployMap := make(map[string]string)
+					deployMap["节点名"] = nodeName
+					deployMap["NAMESPACE"] = pod.Namespace
+					deployMap["POD_NAME"] = pod.Name
+					deployMap["容器名"] = podMetrics.Containers[i].Name
 					cpuUsage := podMetrics.Containers[i].Usage.Cpu()
 					memoryUsage := podMetrics.Containers[i].Usage.Memory()
 					usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 					usedCpuCores := float64(cpuUsage.MilliValue())
 
-					deployMap["当前已使用的内存CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
-					deployMap["CPU_PERCENT"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
-					deployMap["当前已使用的内存内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
-					deployMap["MEMORY_PERCENT"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
+					deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+					deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
+					deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
+					deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
+					ItemList = append(ItemList, deployMap)
 				}
-			} else {
-				klog.Warning(ctx, fmt.Sprintf("Pod %s has no container metrics", pod.Name))
-				deployMap["当前已使用的内存CPU"] = "N/A"
-				deployMap["当前已使用的内存内存"] = "N/A"
 			}
 
-			ItemList = append(ItemList, deployMap)
 		}
 	}
 
