@@ -38,9 +38,10 @@ var AnalysisNodeTatleColumns []string = []string{
 	"节点名",
 	"NAMESPACE",
 	"POD_NAME",
-	"已使用的CPU",
+	"容器名",
+	"当前已使用的CPU",
 	"CPU使用占服务器的百分比",
-	"已使用的内存",
+	"当前已使用的内存",
 	"内存使用占服务器的百分比",
 }
 
@@ -152,6 +153,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
+				row["节点名"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
 				row["容器名"],
