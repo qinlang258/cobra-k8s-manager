@@ -95,7 +95,7 @@ func GetPodTopInfo(ctx context.Context, kubeconfig, workload, namespace string) 
 							usedCpuCores := float64(cpuUsage.MilliValue())
 
 							deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
-							deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
+							deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
 						}
 
 						ItemList = append(ItemList, deployMap)

@@ -332,7 +332,7 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 	mtable.TablePrint("resource", ItemList)
 }
 
-func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespace, prometheusUrl string) {
+func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, workload, namespace, prometheusUrl string) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -363,6 +363,8 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 
+					nodename := pod.Spec.NodeName
+
 					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 
@@ -375,10 +377,10 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 					strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
 					cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
 					if err != nil {
-						// Handle error if conversion fails
 						klog.Error(ctx, err.Error())
 					}
 
+					deployMap["节点名"] = nodename
 					deployMap["NAMESPACE"] = pod.Namespace
 					deployMap["POD_NAME"] = pod.Name
 					deployMap["容器名"] = pod.Spec.Containers[i].Name
@@ -408,6 +410,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				nodename := pod.Spec.NodeName
 
 				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 				cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
@@ -425,6 +428,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 					klog.Error(ctx, err.Error())
 				}
 
+				deployMap["节点名"] = nodename
 				deployMap["NAMESPACE"] = namespace
 				deployMap["POD_NAME"] = pod.Name
 				deployMap["容器名"] = pod.Spec.Containers[i].Name
@@ -457,5 +461,129 @@ func TestPrometheus(ctx context.Context, pod_name, container_name, namespace, pr
 	}
 
 	fmt.Println(result)
+
+}
+
+func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload, namespace, node, prometheusUrl string) {
+	client, err := NewClientset(kubeconfig)
+	if err != nil {
+		klog.Error(ctx, err.Error())
+		return
+	}
+
+	prometheus_client := prometheusplugin.NewProme(prometheusUrl, 10)
+	ItemList := make([]map[string]string, 0)
+
+	if namespace != "all" {
+
+		podsList, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{
+			FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
+		})
+
+		if err != nil {
+			klog.Error(ctx, err.Error())
+		}
+
+		//获取所有pod的资源信息
+		for _, pod := range podsList.Items {
+			for i := 0; i < len(pod.Spec.Containers); i++ {
+				deployMap := make(map[string]string)
+				cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
+				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
+				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				nodename := pod.Spec.NodeName
+
+				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+				cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+
+				strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
+				memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
+				if err1 != nil {
+					klog.Error(ctx, err1.Error())
+				}
+
+				strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
+				cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
+				if err != nil {
+					// Handle error if conversion fails
+					klog.Error(ctx, err.Error())
+				}
+
+				deployMap["节点名"] = nodename
+				deployMap["NAMESPACE"] = pod.Namespace
+				deployMap["POD_NAME"] = pod.Name
+				deployMap["容器名"] = pod.Spec.Containers[i].Name
+				deployMap["CPU限制"] = cpuLimit
+				deployMap["CPU所需"] = cpuRequets
+				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
+				deployMap["内存限制"] = memoryLimit
+				deployMap["内存所需"] = memoryRequests
+				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
+
+				ItemList = append(ItemList, deployMap)
+
+			}
+		}
+	} else {
+		nsList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+		if err != nil {
+			klog.Error(ctx, err.Error())
+		}
+
+		for _, ns := range nsList.Items {
+			podsList, err := client.CoreV1().Pods(ns.Name).List(ctx, metav1.ListOptions{
+				FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
+			})
+
+			if err != nil {
+				klog.Error(ctx, err.Error())
+			}
+
+			//获取所有pod的资源信息
+			for _, pod := range podsList.Items {
+				for i := 0; i < len(pod.Spec.Containers); i++ {
+					deployMap := make(map[string]string)
+					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
+					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
+					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					nodename := pod.Spec.NodeName
+
+					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+
+					strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
+					memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
+					if err1 != nil {
+						klog.Error(ctx, err1.Error())
+					}
+
+					strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
+					cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
+					if err != nil {
+						// Handle error if conversion fails
+						klog.Error(ctx, err.Error())
+					}
+
+					deployMap["节点名"] = nodename
+					deployMap["NAMESPACE"] = ns.Name
+					deployMap["POD_NAME"] = pod.Name
+					deployMap["容器名"] = pod.Spec.Containers[i].Name
+					deployMap["CPU限制"] = cpuLimit
+					deployMap["CPU所需"] = cpuRequets
+					deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
+					deployMap["内存限制"] = memoryLimit
+					deployMap["内存所需"] = memoryRequests
+					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
+
+					ItemList = append(ItemList, deployMap)
+
+				}
+			}
+		}
+	}
+
+	mtable.TablePrint("analysis-cpu-memory", ItemList)
 
 }

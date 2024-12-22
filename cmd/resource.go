@@ -23,9 +23,12 @@ var resourceCmd = &cobra.Command{
 		ctx := context.Background()
 
 		//如果需要输出prometheus实际开销
-		if Prometheus != "" {
-			kube.AnalysisResourceAndLimit(ctx, Kubeconfig, Workload, Namespace, Prometheus)
-		} else {
+		if Prometheus != "" && Node == "" {
+			kube.AnalysisResourceAndLimitWithNamespace(ctx, Kubeconfig, Workload, Namespace, Prometheus)
+		} else if Prometheus != "" && Node != "" {
+			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, Prometheus)
+
+		} else if Prometheus == "" && Node == "" {
 			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name)
 		}
 	},
