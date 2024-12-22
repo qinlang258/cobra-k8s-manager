@@ -387,7 +387,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 					deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
 					deployMap["内存限制"] = memoryLimit
 					deployMap["内存所需"] = memoryRequests
-					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fm", memorySize)
+					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
 
 					ItemList = append(ItemList, deployMap)
 
@@ -433,7 +433,7 @@ func AnalysisResourceAndLimit(ctx context.Context, kubeconfig, workload, namespa
 				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
 				deployMap["内存限制"] = memoryLimit
 				deployMap["内存所需"] = memoryRequests
-				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMI", memorySize)
+				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
 
 				ItemList = append(ItemList, deployMap)
 
