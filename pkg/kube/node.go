@@ -58,7 +58,7 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
 
 		deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
 		deployMap["CPU总大小"] = fmt.Sprintf("%dm", totalCpuCores)
-		deployMap["CPU_PERCENT"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
+		deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
 		deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
 		deployMap["内存总大小"] = fmt.Sprintf("%.2fMi", totalMemoryMi)
 		deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
