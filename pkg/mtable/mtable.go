@@ -60,6 +60,7 @@ var NodeTatleColumns []string = []string{
 }
 
 var AnalysisCpuMemory []string = []string{
+	"节点名",
 	"NAMESPACE",
 	"POD_NAME",
 	"容器名",
@@ -171,6 +172,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
+				row["节点名"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
 				row["容器名"],
