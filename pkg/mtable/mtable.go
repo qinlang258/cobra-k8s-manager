@@ -69,6 +69,8 @@ var AnalysisCpuMemory []string = []string{
 	"最近7天已使用的CPU",
 	"内存限制",
 	"内存所需",
+	"JAVA-XMX",
+	"JAVA-XMS",
 	"最近7天已使用的内存",
 }
 
@@ -181,6 +183,8 @@ func TablePrint(tableName string, data []map[string]string) {
 				row["最近7天已使用的CPU"],
 				row["内存限制"],
 				row["内存所需"],
+				row["JAVA-XMX"],
+				row["JAVA-XMS"],
 				row["最近7天已使用的内存"],
 			})
 		}
