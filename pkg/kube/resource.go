@@ -428,6 +428,24 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 					klog.Error(ctx, err.Error())
 				}
 
+				var xmx, xms string
+
+				item, _ := client.CoreV1().Pods(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
+				for _, container := range item.Spec.Containers {
+					for _, env := range container.Env {
+						if env.Name == "JAVA_OPTS" {
+							for _, v := range strings.Fields(env.Value) {
+								if strings.Contains(v, "Xmx") {
+									xmx = v
+								} else if strings.Contains(v, "Xms") {
+									xms = v
+								}
+
+							}
+						}
+					}
+				}
+
 				deployMap["节点名"] = nodename
 				deployMap["NAMESPACE"] = namespace
 				deployMap["POD_NAME"] = pod.Name
@@ -437,6 +455,8 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
 				deployMap["内存限制"] = memoryLimit
 				deployMap["内存所需"] = memoryRequests
+				deployMap["JAVA-XMX"] = xmx
+				deployMap["JAVA-XMS"] = xms
 				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
 
 				ItemList = append(ItemList, deployMap)
@@ -494,6 +514,24 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 				nodename := pod.Spec.NodeName
 
+				var xmx, xms string
+
+				item, _ := client.CoreV1().Pods(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
+				for _, container := range item.Spec.Containers {
+					for _, env := range container.Env {
+						if env.Name == "JAVA_OPTS" {
+							for _, v := range strings.Fields(env.Value) {
+								if strings.Contains(v, "Xmx") {
+									xmx = v
+								} else if strings.Contains(v, "Xms") {
+									xms = v
+								}
+
+							}
+						}
+					}
+				}
+
 				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 				cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 
@@ -519,6 +557,8 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
 				deployMap["内存限制"] = memoryLimit
 				deployMap["内存所需"] = memoryRequests
+				deployMap["JAVA-XMX"] = xmx
+				deployMap["JAVA-XMS"] = xms
 				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
 
 				ItemList = append(ItemList, deployMap)
@@ -549,6 +589,23 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
 					nodename := pod.Spec.NodeName
+					var xmx, xms string
+
+					item, _ := client.CoreV1().Pods(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
+					for _, container := range item.Spec.Containers {
+						for _, env := range container.Env {
+							if env.Name == "JAVA_OPTS" {
+								for _, v := range strings.Fields(env.Value) {
+									if strings.Contains(v, "Xmx") {
+										xmx = v
+									} else if strings.Contains(v, "Xms") {
+										xms = v
+									}
+
+								}
+							}
+						}
+					}
 
 					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
 					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
@@ -575,6 +632,8 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 					deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
 					deployMap["内存限制"] = memoryLimit
 					deployMap["内存所需"] = memoryRequests
+					deployMap["JAVA-XMX"] = xmx
+					deployMap["JAVA-XMS"] = xms
 					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
 
 					ItemList = append(ItemList, deployMap)
