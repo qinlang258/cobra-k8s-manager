@@ -26,6 +26,7 @@ var ResourceTatleColumns []string = []string{
 }
 
 var TopTatleColumns []string = []string{
+	"节点名",
 	"NAMESPACE",
 	"资源类型",
 	"资源名",
@@ -119,6 +120,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		// Add rows to the table
 		for _, row := range data {
 			table.Append([]string{
+				row["节点名"],
 				row["NAMESPACE"],
 				row["资源类型"],
 				row["资源名"],
