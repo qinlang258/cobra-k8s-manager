@@ -50,11 +50,11 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
 
 		// 将内存从 Ki 转换为 Mi
 		usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
-		totalMemoryMi := float64(values.Status.Capacity.Memory().Value()) / 1024 / 1024
+		totalMemoryMi := float64(values.Status.Allocatable.Memory().Value()) / 1024 / 1024
 
 		// 转换 CPU 使用量为毫核心数
 		usedCpuCores := float64(cpuUsage.MilliValue())
-		totalCpuCores := values.Status.Capacity.Cpu().MilliValue()
+		totalCpuCores := values.Status.Allocatable.Cpu().MilliValue()
 
 		deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
 		deployMap["CPU总大小"] = fmt.Sprintf("%dm", totalCpuCores)
