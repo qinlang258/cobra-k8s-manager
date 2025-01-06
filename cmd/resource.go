@@ -40,5 +40,8 @@ var resourceCmd = &cobra.Command{
 
 func init() {
 	//rootCmd.AddCommand(resourceCmd)
+	resourceCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
 	resourceCmd.PersistentFlags().StringVarP(&Prometheus, "url", "u", "", "需要分析的话，填写prometheus的地址，仅支持当前集群的状态查询")
+	resourceCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "all", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
+	resourceCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 }
