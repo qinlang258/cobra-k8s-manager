@@ -13,7 +13,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func AnalysisNode(ctx context.Context, kubeconfig, nodeName string) {
+func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
