@@ -23,5 +23,6 @@ var analysisCmd = &cobra.Command{
 }
 
 func init() {
+	analysisCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
 
 }

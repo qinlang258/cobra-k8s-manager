@@ -23,14 +23,12 @@ var imageCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		// if name != "" && namespace == "" && workload == "" {
-		// 	cmd.Help()
-		// 	return
-		// }
 		kube.GetWorkloadImage(ctx, Kubeconfig, Workload, Namespace)
 	},
 }
 
 func init() {
 	//rootCmd.AddCommand(imageCmd)
+	imageCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "all", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
+	imageCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 }
