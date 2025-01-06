@@ -18,11 +18,10 @@ var analysisCmd = &cobra.Command{
 	Example: "./k8s-manager analysis <节点名>",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		kube.AnalysisNode(ctx, Kubeconfig, Node)
+		kube.AnalysisNodeWithNode(ctx, Kubeconfig, Node)
 	},
 }
 
 func init() {
 	analysisCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
-
 }

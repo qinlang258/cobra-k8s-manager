@@ -55,7 +55,4 @@ func init() {
 	rootCmd.AddCommand(analysisCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&Kubeconfig, "kubeconfig", "", "/root/.kube/config", "请输入 kubeconfig的文件路径")
-	rootCmd.PersistentFlags().StringVarP(&Name, "name", "", "", "请输入资源的name信息")
-	rootCmd.PersistentFlags().StringVarP(&Analysis, "analysis", "", "", "请输入想分析的Node名字")
-
 }
