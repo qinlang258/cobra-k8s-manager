@@ -12,9 +12,7 @@ import (
 
 	prov1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog/v2"
 )
 
@@ -568,142 +566,83 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 			}
 		}
 	} else {
-		// nsList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
-		// if err != nil {
-		// 	klog.Error(ctx, err.Error())
-		// }
-
-		//for _, ns := range nsList.Items {
-		podsList, err := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{
-			FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
-		})
-
+		nsList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
 		if err != nil {
 			klog.Error(ctx, err.Error())
 		}
 
-		//获取所有pod的资源信息
-		for _, pod := range podsList.Items {
-			for i := 0; i < len(pod.Spec.Containers); i++ {
-				deployMap := make(map[string]string)
-				cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
-				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
-				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-				nodename := pod.Spec.NodeName
-				var xmx, xms string
+		for _, ns := range nsList.Items {
+			podsList, err := client.CoreV1().Pods(ns.Name).List(ctx, metav1.ListOptions{
+				FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
+			})
 
-				item, _ := client.CoreV1().Pods(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
-				for _, container := range item.Spec.Containers {
-					for _, env := range container.Env {
-						if env.Name == "JAVA_OPTS" {
-							for _, v := range strings.Fields(env.Value) {
-								if strings.Contains(v, "Xmx") {
-									xmx = v
-								} else if strings.Contains(v, "Xms") {
-									xms = v
+			if err != nil {
+				klog.Error(ctx, err.Error())
+			}
+
+			//获取所有pod的资源信息
+			for _, pod := range podsList.Items {
+				for i := 0; i < len(pod.Spec.Containers); i++ {
+					deployMap := make(map[string]string)
+					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
+					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
+					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					nodename := pod.Spec.NodeName
+					var xmx, xms string
+
+					item, _ := client.CoreV1().Pods(pod.Namespace).Get(ctx, pod.Name, metav1.GetOptions{})
+					for _, container := range item.Spec.Containers {
+						for _, env := range container.Env {
+							if env.Name == "JAVA_OPTS" {
+								for _, v := range strings.Fields(env.Value) {
+									if strings.Contains(v, "Xmx") {
+										xmx = v
+									} else if strings.Contains(v, "Xms") {
+										xms = v
+									}
+
 								}
-
 							}
 						}
 					}
+
+					memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+					cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
+
+					strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
+					memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
+					if err1 != nil {
+						klog.Error(ctx, err1.Error())
+					}
+
+					strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
+					cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
+					if err != nil {
+						// Handle error if conversion fails
+						klog.Error(ctx, err.Error())
+					}
+
+					deployMap["节点名"] = nodename
+					deployMap["NAMESPACE"] = ns.Name
+					deployMap["POD_NAME"] = pod.Name
+					deployMap["容器名"] = pod.Spec.Containers[i].Name
+					deployMap["CPU限制"] = cpuLimit
+					deployMap["CPU所需"] = cpuRequets
+					deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
+					deployMap["内存限制"] = memoryLimit
+					deployMap["内存所需"] = memoryRequests
+					deployMap["JAVA-XMX"] = xmx
+					deployMap["JAVA-XMS"] = xms
+					deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
+
+					ItemList = append(ItemList, deployMap)
+
 				}
-
-				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
-				cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
-
-				strmemorySize := FormatData(prometheus_client.Client.Query(ctx, memorySql, time.Now()))
-				memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
-				if err1 != nil {
-					klog.Error(ctx, err1.Error())
-				}
-
-				strcpuSize := FormatData(prometheus_client.Client.Query(ctx, cpuSql, time.Now()))
-				cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
-				if err != nil {
-					// Handle error if conversion fails
-					klog.Error(ctx, err.Error())
-				}
-
-				deployMap["节点名"] = nodename
-				deployMap["NAMESPACE"] = pod.Namespace
-				deployMap["POD_NAME"] = pod.Name
-				deployMap["容器名"] = pod.Spec.Containers[i].Name
-				deployMap["CPU限制"] = cpuLimit
-				deployMap["CPU所需"] = cpuRequets
-				deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
-				deployMap["内存限制"] = memoryLimit
-				deployMap["内存所需"] = memoryRequests
-				deployMap["JAVA-XMX"] = xmx
-				deployMap["JAVA-XMS"] = xms
-				deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
-
-				ItemList = append(ItemList, deployMap)
-
 			}
 		}
-		//}
 	}
 
 	mtable.TablePrint("analysis-cpu-memory", ItemList)
 
-}
-
-func handlePod(pod *corev1.Pod, prometheusUrl string, client kubernetes.Interface, ItemList []map[string]string, namespace, node string) {
-	prometheus_client := prometheusplugin.NewProme(prometheusUrl, 10)
-	// Pod 资源分析逻辑，抽取重复代码
-	for i := 0; i < len(pod.Spec.Containers); i++ {
-		deployMap := make(map[string]string)
-		cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
-		cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
-		memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-		memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-		nodename := pod.Spec.NodeName
-		var xmx, xms string
-
-		item, _ := client.CoreV1().Pods(pod.Namespace).Get(context.Background(), pod.Name, metav1.GetOptions{})
-		for _, container := range item.Spec.Containers {
-			for _, env := range container.Env {
-				if env.Name == "JAVA_OPTS" {
-					for _, v := range strings.Fields(env.Value) {
-						if strings.Contains(v, "Xmx") {
-							xmx = v
-						} else if strings.Contains(v, "Xms") {
-							xms = v
-						}
-					}
-				}
-			}
-		}
-
-		memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
-		cpuSql := fmt.Sprintf(podCpuUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
-
-		strmemorySize := FormatData(prometheus_client.Client.Query(context.Background(), memorySql, time.Now()))
-		memorySize, err1 := strconv.ParseFloat(strmemorySize, 64)
-		if err1 != nil {
-			klog.Error(context.Background(), err1.Error())
-		}
-
-		strcpuSize := FormatData(prometheus_client.Client.Query(context.Background(), cpuSql, time.Now()))
-		cpuSize, err := strconv.ParseFloat(strcpuSize, 64)
-		if err != nil {
-			klog.Error(context.Background(), err.Error())
-		}
-
-		deployMap["节点名"] = nodename
-		deployMap["NAMESPACE"] = pod.Namespace
-		deployMap["POD_NAME"] = pod.Name
-		deployMap["容器名"] = pod.Spec.Containers[i].Name
-		deployMap["CPU限制"] = cpuLimit
-		deployMap["CPU所需"] = cpuRequets
-		deployMap["最近7天已使用的CPU"] = fmt.Sprintf("%.2fm", cpuSize)
-		deployMap["内存限制"] = memoryLimit
-		deployMap["内存所需"] = memoryRequests
-		deployMap["JAVA-XMX"] = xmx
-		deployMap["JAVA-XMS"] = xms
-		deployMap["最近7天已使用的内存"] = fmt.Sprintf("%.2fMi", memorySize)
-
-		ItemList = append(ItemList, deployMap)
-	}
 }
