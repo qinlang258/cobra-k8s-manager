@@ -33,8 +33,8 @@ func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string) {
 		klog.Error(ctx, err.Error())
 	}
 
-	totalMemoryMi := float64(nodeData.Status.Capacity.Memory().Value()) / 1024 / 1024
-	totalCpuCores := nodeData.Status.Capacity.Cpu().MilliValue()
+	totalMemoryMi := float64(nodeData.Status.Allocatable.Memory().Value()) / 1024 / 1024
+	totalCpuCores := nodeData.Status.Allocatable.Cpu().MilliValue()
 
 	podList, _ := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{})
 	for _, pod := range podList.Items {
