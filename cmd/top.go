@@ -17,6 +17,10 @@ var topCmd = &cobra.Command{
 	Long:  "获取容器的实际使用资源开销",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
+		if Namespace == "" && Node == "" {
+			kube.GetPodTopInfoWithCurrentNamespace(ctx, Kubeconfig)
+		}
+
 		if Namespace != "" && Node == "" {
 			kube.GetPodTopInfoWithNamespace(ctx, Kubeconfig, Workload, Namespace)
 		}
