@@ -22,7 +22,7 @@ type Prometheus struct {
 	Url        string `yaml:"url"`
 }
 
-func getPrometheusUrl(ctx context.Context, kubeconfigPath string) string {
+func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -36,9 +36,10 @@ func getPrometheusUrl(ctx context.Context, kubeconfigPath string) string {
 	data, err := clientset.NetworkingV1().Ingresses("monitoring").Get(ctx, "prometheus", metav1.GetOptions{})
 	if err != nil {
 		klog.Error(ctx, err.Error())
+		return "", err
 	}
 
-	return "http://" + data.Spec.Rules[0].Host
+	return "http://" + data.Spec.Rules[0].Host, nil
 }
 
 // 定义Cluster结构体
@@ -107,7 +108,12 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 
 		var prometheus Prometheus
 		prometheus.KubeConfig = file
-		prometheus.Url = getPrometheusUrl(ctx, file)
+		url, err := getPrometheusUrl(ctx, file)
+		if err != nil {
+			klog.Error(ctx, err.Error())
+			continue
+		}
+		prometheus.Url = url
 
 		pcs = append(pcs, prometheus)
 
