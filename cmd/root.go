@@ -14,7 +14,7 @@ import (
 var command string
 
 var (
-	Workload, Namespace, Name, Kubeconfig, Node, Analysis string
+	Workload, Namespace, Name, Kubeconfig, Node, Analysis, KubeconfigPath string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -53,6 +53,7 @@ func init() {
 	rootCmd.AddCommand(topCmd)
 	rootCmd.AddCommand(nodeCmd)
 	rootCmd.AddCommand(analysisCmd)
+	rootCmd.AddCommand(configCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&Kubeconfig, "kubeconfig", "", "/root/.kube/config", "请输入 kubeconfig的文件路径")
 }
