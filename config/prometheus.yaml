@@ -1,0 +1,3 @@
+prometheus:
+    - kubeconfig: /root/.kube/config
+      url: http://prometheus.jcrose.com
