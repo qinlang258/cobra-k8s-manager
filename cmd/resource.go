@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"k8s-manager/pkg/kube"
 
 	"github.com/spf13/cobra"
@@ -61,6 +62,7 @@ var resourceCmd = &cobra.Command{
 		var url string
 		if Prometheus {
 			url = getPrometheusUrl(ctx, Kubeconfig)
+			fmt.Println(url)
 		}
 		//读取 Prometheus地址
 
