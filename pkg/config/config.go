@@ -116,15 +116,28 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 		prometheus.Url = url
 
 		pcs = append(pcs, prometheus)
-
 	}
 
-	// 输出到文件 config/prometheus.yaml
-	prometheusConfig := PrometheusConfig{Prometheus: pcs}
-	outputFile := "config/prometheus.yaml"
+	// 获取当前用户的家目录
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		klog.Error(ctx, "Failed to get user home directory: "+err.Error())
+		return false
+	}
+
+	// 定义目标文件路径
+	targetDir := filepath.Join(homeDir, ".kube", "jcrose-prometheus")
+	targetFile := filepath.Join(targetDir, "prometheus.yaml")
+
+	// 确保目标目录存在
+	err = os.MkdirAll(targetDir, os.ModePerm)
+	if err != nil {
+		klog.Error(ctx, "Failed to create directories: "+err.Error())
+		return false
+	}
 
 	// 创建并打开文件，写入数据
-	file, err := os.Create(outputFile)
+	file, err := os.Create(targetFile)
 	if err != nil {
 		klog.Error(ctx, "Failed to create file: "+err.Error())
 		return false
@@ -132,6 +145,7 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 	defer file.Close()
 
 	// 将 pcs 数据转换为 YAML 格式
+	prometheusConfig := PrometheusConfig{Prometheus: pcs}
 	dataToWrite, err := yaml.Marshal(prometheusConfig)
 	if err != nil {
 		klog.Error(ctx, "Failed to marshal prometheus config: "+err.Error())
@@ -146,6 +160,6 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 	}
 
 	// 输出成功日志
-	klog.Info(ctx, "Prometheus configuration written to ", outputFile)
+	klog.Info(ctx, "Prometheus configuration written to ", targetFile)
 	return true
 }
