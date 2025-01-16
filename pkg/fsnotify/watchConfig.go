@@ -1,11 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
 	"gopkg.in/yaml.v3"
+	"k8s.io/klog/v2"
 )
 
 type Cluster struct {
@@ -89,8 +93,13 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 
 func main() {
 	// 监听 kubeconfig 和 prometheus.yaml 的路径
-	kubeConfigPath := "/root/.kube/config"
-	prometheusConfigPath := "../../config/prometheus.yaml"
+	// 获取当前用户的家目录
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		klog.Error(context.Background(), "Failed to get user home directory: "+err.Error())
+	}
+	kubeConfigPath := filepath.Join(homeDir, ".kube", "config")
+	prometheusConfigPath := filepath.Join(homeDir, ".kube", "jcrose-prometheus", "prometheus.yaml")
 
 	// 创建 fsnotify watcher
 	watcher, err := fsnotify.NewWatcher()

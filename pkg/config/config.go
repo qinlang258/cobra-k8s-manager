@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,6 +24,7 @@ type Prometheus struct {
 }
 
 func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error) {
+	fmt.Println(kubeconfigPath)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -58,22 +60,20 @@ type KubeConfig struct {
 func findYamlFiles(root string) ([]string, error) {
 	var yamlFiles []string
 
-	// Walk the directory
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		// If there's an error walking, return it
-		if err != nil {
-			return err
-		}
-
-		// Check if the file has a .yaml extension
-		if !info.IsDir() && strings.HasSuffix(info.Name(), ".yaml") || info.Name() == "config" {
-			yamlFiles = append(yamlFiles, path)
-		}
-		return nil
-	})
-
+	dir := filepath.Dir(root)
+	// 读取目录内容
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
+	}
+
+	// 遍历目录中的文件和文件夹
+	for _, file := range files {
+		// 如果是文件并且后缀是 .yaml 或 .yml
+		if !file.IsDir() && (strings.HasSuffix(file.Name(), ".yaml") || strings.HasSuffix(file.Name(), ".yml") || file.Name() == "config") {
+			// 拼接完整路径并添加到结果中
+			yamlFiles = append(yamlFiles, dir+"/"+file.Name())
+		}
 	}
 
 	return yamlFiles, nil
