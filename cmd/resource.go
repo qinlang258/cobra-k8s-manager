@@ -7,6 +7,8 @@ import (
 	"context"
 	"fmt"
 	"k8s-manager/pkg/kube"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,12 +20,22 @@ var (
 )
 
 func getPrometheusUrl(ctx context.Context, file string) string {
+	// 获取当前用户的家目录
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		klog.Error(ctx, "Failed to get user home directory: "+err.Error())
+	}
+
+	// 定义目标文件路径
+	targetDir := filepath.Join(homeDir, ".kube", "jcrose-prometheus")
+	targetFile := filepath.Join(targetDir, "prometheus.yaml")
+
 	// 设置 Viper 配置文件路径和类型
 	viper.SetConfigType("yaml")
-	viper.SetConfigFile("config/prometheus.yaml")
+	viper.SetConfigFile(targetFile)
 
 	// 读取配置文件
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		klog.Error(ctx, "Failed to read config: "+err.Error())
 		return ""
