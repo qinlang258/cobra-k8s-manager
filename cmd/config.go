@@ -22,6 +22,6 @@ var configCmd = &cobra.Command{
 }
 
 func init() {
-	configCmd.PersistentFlags().StringVarP(&KubeconfigPath, "kubeconfig_path", "p", "/root/.kube/", "默认位置在当前家目录的.kube文件夹下")
+	configCmd.PersistentFlags().StringVarP(&KubeconfigPath, "path", "p", "/root/.kube/", "默认位置在当前家目录的~/.kube文件夹下")
 
 }
