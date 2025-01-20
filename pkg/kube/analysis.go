@@ -3,6 +3,7 @@ package kube
 import (
 	"context"
 	"fmt"
+	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 	"sort"
 
@@ -13,7 +14,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string) {
+func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -88,6 +89,9 @@ func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string) {
 
 	// 打印排序后的结果
 	mtable.TablePrint("analysis", ItemList)
+	if export {
+		excel.ExportXlsx(ctx, "image", ItemList, kubeconfig)
+	}
 }
 
 // 辅助函数：解析 当前已使用的内存内存 字符串，返回数值

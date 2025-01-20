@@ -18,17 +18,17 @@ var topCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		if Namespace == "" && Node == "" {
-			kube.GetPodTopInfoWithCurrentNamespace(ctx, Kubeconfig)
+			kube.GetPodTopInfoWithCurrentNamespace(ctx, Kubeconfig, Export)
 		}
 
 		if Namespace != "" && Node == "" {
-			kube.GetPodTopInfoWithNamespace(ctx, Kubeconfig, Workload, Namespace)
+			kube.GetPodTopInfoWithNamespace(ctx, Kubeconfig, Workload, Namespace, Export)
 		}
 		if Node != "" && Namespace == "" {
-			kube.GetPodTopInfoWithNode(ctx, Kubeconfig, Workload, Node)
+			kube.GetPodTopInfoWithNode(ctx, Kubeconfig, Workload, Node, Export)
 		}
 		if Node != "" && Namespace != "" {
-			kube.GetPodTopInfoWithNamespaceAndNode(ctx, Kubeconfig, Workload, Node, Namespace)
+			kube.GetPodTopInfoWithNamespaceAndNode(ctx, Kubeconfig, Workload, Node, Namespace, Export)
 		}
 
 	},

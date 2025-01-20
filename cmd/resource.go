@@ -7,61 +7,14 @@ import (
 	"context"
 	"fmt"
 	"k8s-manager/pkg/kube"
-	"os"
-	"path/filepath"
+	"k8s-manager/pkg/prometheusplugin"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"k8s.io/klog/v2"
 )
 
 var (
 	Prometheus bool
 )
-
-func getPrometheusUrl(ctx context.Context, file string) string {
-	// 获取当前用户的家目录
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		klog.Error(ctx, "Failed to get user home directory: "+err.Error())
-	}
-
-	// 定义目标文件路径
-	targetDir := filepath.Join(homeDir, ".kube", "jcrose-prometheus")
-	targetFile := filepath.Join(targetDir, "prometheus.yaml")
-
-	// 设置 Viper 配置文件路径和类型
-	viper.SetConfigType("yaml")
-	viper.SetConfigFile(targetFile)
-
-	// 读取配置文件
-	err = viper.ReadInConfig()
-	if err != nil {
-		klog.Error(ctx, "Failed to read config: "+err.Error())
-		return ""
-	}
-
-	// 获取 prometheus 配置部分
-	var prometheusConfig []map[string]interface{}
-	err = viper.UnmarshalKey("prometheus", &prometheusConfig)
-	if err != nil {
-		klog.Error(ctx, "Failed to unmarshal prometheus config: "+err.Error())
-		return ""
-	}
-
-	// 遍历配置并查找匹配的 kubeconfig
-	for _, item := range prometheusConfig {
-		kubeconfig := item["kubeconfig"].(string)
-		if kubeconfig == file {
-			// 获取对应的 URL
-			url := item["url"].(string)
-			return url
-		}
-	}
-
-	// 如果没有找到匹配的 kubeconfig
-	return ""
-}
 
 // resourceCmd represents the resource command
 var resourceCmd = &cobra.Command{
@@ -73,19 +26,19 @@ var resourceCmd = &cobra.Command{
 
 		var url string
 		if Prometheus {
-			url = getPrometheusUrl(ctx, Kubeconfig)
+			url = prometheusplugin.GetPrometheusUrl(ctx, Kubeconfig)
 			fmt.Println("所使用的prometheus地址是： ", url)
 		}
 		//读取 Prometheus地址
 
 		//如果需要输出prometheus实际开销
 		if Prometheus != false && Node == "" {
-			kube.AnalysisResourceAndLimitWithNamespace(ctx, Kubeconfig, Workload, Namespace, url)
+			kube.AnalysisResourceAndLimitWithNamespace(ctx, Kubeconfig, Workload, Namespace, url, Export)
 		} else if Prometheus != false && Node != "" {
-			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, url)
+			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, url, Export)
 
 		} else if Prometheus == false && Node == "" {
-			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name)
+			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name, Export)
 		}
 	},
 }

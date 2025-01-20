@@ -23,7 +23,7 @@ var imageCmd = &cobra.Command{
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		kube.GetWorkloadImage(ctx, Kubeconfig, Workload, Namespace)
+		kube.GetWorkloadImage(ctx, Kubeconfig, Workload, Namespace, Export)
 	},
 }
 

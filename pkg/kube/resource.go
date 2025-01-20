@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 	"k8s-manager/pkg/prometheusplugin"
 
@@ -44,7 +45,7 @@ func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
 	return num_data
 }
 
-func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespace, name string) {
+func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespace, name string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(err)
@@ -330,9 +331,13 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 	}
 
 	mtable.TablePrint("resource", ItemList)
+
+	if export {
+		excel.ExportXlsx(ctx, "resource", ItemList, kubeconfig)
+	}
 }
 
-func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, workload, namespace, prometheusUrl string) {
+func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, workload, namespace, prometheusUrl string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -467,6 +472,10 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 
 	mtable.TablePrint("analysis-cpu-memory", ItemList)
 
+	if export {
+		excel.ExportXlsx(ctx, "analysis-cpu-memory", ItemList, kubeconfig)
+	}
+
 }
 
 func TestPrometheus(ctx context.Context, pod_name, container_name, namespace, prometheusUrl string) {
@@ -484,7 +493,7 @@ func TestPrometheus(ctx context.Context, pod_name, container_name, namespace, pr
 
 }
 
-func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload, namespace, node, prometheusUrl string) {
+func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload, namespace, node, prometheusUrl string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -645,4 +654,7 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 
 	mtable.TablePrint("analysis-cpu-memory", ItemList)
 
+	if export {
+		excel.ExportXlsx(ctx, "analysis-cpu-memory", ItemList, kubeconfig)
+	}
 }

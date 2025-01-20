@@ -18,7 +18,7 @@ var nodeCmd = &cobra.Command{
 	Example: "./k8s-manager node --kubeconfig <可选，配置文件地址，默认/root/.kube/config> -n <查询的namespace空间>",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		kube.GetNodeInfo(ctx, Node, Kubeconfig)
+		kube.GetNodeInfo(ctx, Node, Kubeconfig, Export)
 	},
 }
 

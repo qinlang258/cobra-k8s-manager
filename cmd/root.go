@@ -15,6 +15,7 @@ var command string
 
 var (
 	Workload, Namespace, Name, Kubeconfig, Node, Analysis, KubeconfigPath string
+	Export                                                                bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -33,6 +34,7 @@ to quickly create a Cobra application.`,
 		if len(command) == 0 {
 			cmd.Help()
 			klog.Error("必须输入想要查询的内容")
+
 			return
 		}
 	},
@@ -56,4 +58,5 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&Kubeconfig, "kubeconfig", "", "/root/.kube/config", "请输入 kubeconfig的文件路径")
+	rootCmd.PersistentFlags().BoolVarP(&Export, "export", "", false, "是否输出Excel?默认不输出")
 }
