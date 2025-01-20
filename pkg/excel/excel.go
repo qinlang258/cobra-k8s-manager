@@ -68,7 +68,7 @@ func ExportXlsx(ctx context.Context, tableName string, dataList []map[string]str
 
 	// 获取当前东八区时间
 	currentTime := time.Now().In(location)
-	excelName := fmt.Sprintf("%s集群-%s-%s.xlsx", name, tableName, currentTime.Format("2006-01-02-15:04:05"))
+	excelName := fmt.Sprintf("%s集群-%s-%s.xlsx", name, tableName, currentTime.Format("2006-01-02-150405"))
 	// 保存文件
 	if err := file.SaveAs(excelName); err != nil {
 		panic(err)
