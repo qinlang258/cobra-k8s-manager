@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"gopkg.in/yaml.v3"
@@ -20,11 +21,13 @@ type KubeConfig struct {
 	Clusters []Cluster `yaml:"clusters"`
 }
 
+type PrometheusConfigs struct {
+	Prometheus []PrometheusConfig
+}
+
 type PrometheusConfig struct {
-	Prometheus []struct {
-		Kubeconfig string `yaml:"kubeconfig"`
-		URL        string `yaml:"url"`
-	} `yaml:"prometheus"`
+	Kubeconfig string `yaml:"kubeconfig"`
+	URL        string `yaml:"url"`
 }
 
 func watchKubeConfig(filePath string, watcher *fsnotify.Watcher) error {
@@ -63,21 +66,33 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 		return err
 	}
 
-	var prometheusConfig PrometheusConfig
-	err = yaml.Unmarshal(data, &prometheusConfig)
+	var targetUrl string
+	var prometheusConfigs PrometheusConfigs
+	err = yaml.Unmarshal(data, &prometheusConfigs)
 	if err != nil {
 		return err
 	}
 
-	// 更新 prometheus.yaml 中的 URL
-	for i := range prometheusConfig.Prometheus {
-		if prometheusConfig.Prometheus[i].Kubeconfig == "/root/.kube/config" {
-			prometheusConfig.Prometheus[i].URL = fmt.Sprintf("http://prometheus.%s.yunlizhi.net", clusterName)
+	// 查找匹配的 kubeconfig
+	for i := range prometheusConfigs.Prometheus {
+		if strings.Contains(prometheusConfigs.Prometheus[i].Kubeconfig, clusterName) {
+			// 获取目标URL
+			targetUrl = prometheusConfigs.Prometheus[i].URL
+			break
+		}
+	}
+
+	// 查找匹配的 kubeconfig
+	for j := range prometheusConfigs.Prometheus {
+		if strings.Contains(prometheusConfigs.Prometheus[j].Kubeconfig, "/root/.kube/config") {
+			// 获取目标URL
+			prometheusConfigs.Prometheus[j].URL = targetUrl
+			break
 		}
 	}
 
 	// 将更新后的内容写回文件
-	updatedData, err := yaml.Marshal(&prometheusConfig)
+	updatedData, err := yaml.Marshal(&prometheusConfigs)
 	if err != nil {
 		return err
 	}
@@ -87,7 +102,7 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 		return err
 	}
 
-	fmt.Println("prometheus.yaml updated with new URL:", prometheusConfig.Prometheus[0].URL)
+	fmt.Println("prometheus.yaml updated with new URL:", prometheusConfigs.Prometheus[0].URL)
 	return nil
 }
 
