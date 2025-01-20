@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,6 +22,18 @@ type PrometheusConfig struct {
 type Prometheus struct {
 	KubeConfig string `yaml:"kubeconfig"`
 	Url        string `yaml:"url"`
+}
+
+type Cluster struct {
+	Name string `yaml:"name"`
+}
+
+type KubeConfig struct {
+	Clusters []Cluster `yaml:"clusters"`
+}
+
+type PrometheusConfigs struct {
+	Prometheus []Prometheus
 }
 
 func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error) {
@@ -42,19 +55,6 @@ func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error
 	}
 
 	return "http://" + data.Spec.Rules[0].Host, nil
-}
-
-// 定义Cluster结构体
-type Cluster struct {
-	Cluster struct {
-		CertificateAuthorityData string `yaml:"certificate-authority-data"`
-		Server                   string `yaml:"server"`
-	} `yaml:"cluster"`
-	Name string `yaml:"name"`
-}
-
-type KubeConfig struct {
-	Clusters []Cluster `yaml:"clusters"`
 }
 
 func findYamlFiles(root string) ([]string, error) {
@@ -162,4 +162,49 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 	// 输出成功日志
 	klog.Info(ctx, "Prometheus configuration written to ", targetFile)
 	return true
+}
+
+func GetClusterNameFromPrometheusUrl(kubeconfigPath string) (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		klog.Error(context.Background(), "Failed to get user home directory: "+err.Error())
+	}
+	prometheusConfigPath := filepath.Join(homeDir, ".kube", "jcrose-prometheus", "prometheus.yaml")
+	// 读取 prometheus.yaml 配置文件
+
+	data, err := ioutil.ReadFile(prometheusConfigPath)
+	if err != nil {
+		return "", err
+	}
+
+	var name string
+	var prometheusUrl string
+	var prometheusConfigs PrometheusConfigs
+	err = yaml.Unmarshal(data, &prometheusConfigs)
+	if err != nil {
+		return "", err
+	}
+
+	// 查找匹配的 kubeconfig
+	for i := range prometheusConfigs.Prometheus {
+		if strings.Contains(prometheusConfigs.Prometheus[i].KubeConfig, kubeconfigPath) {
+			// 获取目标URL
+			prometheusUrl = prometheusConfigs.Prometheus[i].Url
+			break
+		}
+	}
+
+	// 查找匹配的 kubeconfig
+	for j := range prometheusConfigs.Prometheus {
+		if strings.Contains(prometheusConfigs.Prometheus[j].Url, prometheusUrl) && prometheusConfigs.Prometheus[j].KubeConfig != "/root/.kube/config" {
+			// 获取目标URL
+			name = prometheusConfigs.Prometheus[j].KubeConfig
+			break
+		}
+	}
+
+	fieldsName := strings.Split(name, "/")
+	yamlName := fieldsName[len(fieldsName)-1]
+	return strings.Split(yamlName, ".")[0], err
+
 }

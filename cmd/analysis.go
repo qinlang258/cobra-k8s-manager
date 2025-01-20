@@ -18,7 +18,7 @@ var analysisCmd = &cobra.Command{
 	Example: "./k8s-manager analysis <节点名>",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		kube.AnalysisNodeWithNode(ctx, Kubeconfig, Node)
+		kube.AnalysisNodeWithNode(ctx, Kubeconfig, Node, Export)
 	},
 }
 

@@ -3,13 +3,14 @@ package kube
 import (
 	"context"
 
+	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
 )
 
-func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace string) {
+func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(err)
@@ -227,4 +228,7 @@ func GetWorkloadImage(ctx context.Context, kubeconfig, workload, namespace strin
 	}
 
 	mtable.TablePrint("image", ItemList)
+	if export {
+		excel.ExportXlsx(ctx, "image", ItemList, kubeconfig)
+	}
 }

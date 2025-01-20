@@ -3,6 +3,7 @@ package kube
 import (
 	"context"
 	"fmt"
+	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 
 	corev1 "k8s.io/api/core/v1"
@@ -10,7 +11,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
+func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -66,5 +67,8 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string) {
 	}
 
 	mtable.TablePrint("node", ItemList)
+	if export {
+		excel.ExportXlsx(ctx, "node", ItemList, kubeconfig)
+	}
 
 }

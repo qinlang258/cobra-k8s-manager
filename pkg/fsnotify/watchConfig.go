@@ -38,7 +38,7 @@ func watchKubeConfig(filePath string, watcher *fsnotify.Watcher) error {
 	return nil
 }
 
-func getClusterNameFromKubeConfig(filePath string) (string, error) {
+func GetClusterNameFromKubeConfig(filePath string) (string, error) {
 	// 读取 kubeconfig 文件
 	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -134,7 +134,7 @@ func main() {
 	fmt.Println("Watching for changes in", kubeConfigPath)
 
 	// 获取初始的 cluster 名称并更新 prometheus.yaml
-	clusterName, err := getClusterNameFromKubeConfig(kubeConfigPath)
+	clusterName, err := GetClusterNameFromKubeConfig(kubeConfigPath)
 	if err != nil {
 		fmt.Println("Error getting cluster name:", err)
 		return
@@ -151,7 +151,7 @@ func main() {
 		case event := <-watcher.Events:
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				fmt.Println("Detected change in kubeconfig:", event.Name)
-				clusterName, err := getClusterNameFromKubeConfig(kubeConfigPath)
+				clusterName, err := GetClusterNameFromKubeConfig(kubeConfigPath)
 				if err != nil {
 					fmt.Println("Error getting cluster name:", err)
 					continue

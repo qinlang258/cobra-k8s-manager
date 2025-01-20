@@ -3,13 +3,14 @@ package kube
 import (
 	"context"
 	"fmt"
+	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
 )
 
-func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload, node, namespace string) {
+func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload, node, namespace string, export bool) {
 	ItemList := make([]map[string]string, 0)
 
 	client, err := NewClientset(kubeconfig)
@@ -63,10 +64,15 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 	}
 
 	mtable.TablePrint("top", ItemList)
+	if export {
+		if export {
+			excel.ExportXlsx(ctx, "top", ItemList, kubeconfig)
+		}
+	}
 
 }
 
-func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node string) {
+func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -160,9 +166,14 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node strin
 	}
 
 	mtable.TablePrint("top", ItemList)
+	if export {
+		if export {
+			excel.ExportXlsx(ctx, "top", ItemList, kubeconfig)
+		}
+	}
 }
 
-func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig string) {
+func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -276,7 +287,7 @@ func GetPodAllTopInfo(ctx context.Context, kubeconfig string) {
 	mtable.TablePrint("top", ItemList)
 }
 
-func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, namespace string) {
+func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, namespace string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -368,4 +379,7 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 	}
 
 	mtable.TablePrint("top", ItemList)
+	if export {
+		excel.ExportXlsx(ctx, "top", ItemList, kubeconfig)
+	}
 }
