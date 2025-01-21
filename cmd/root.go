@@ -22,12 +22,13 @@ var (
 var rootCmd = &cobra.Command{
 	Use:   "k8s-manager",
 	Short: "获取K8S的资源使用情况",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `jcrose的k8s管理工具，功能涵盖如下
+	1 analysis 分析某一节点的资源使用情况，类似于describe node xxx
+	2 config 生成 /root/.kube/jcrose-prometheus/prometheus.yaml 配置文件，获取默认路径/root/.kube/下的yaml文件导入prometheus的地址
+	3 image 获取镜像地址
+	4 node 获取所有node节点的信息
+	5 resource 获取pod所使用的 limit与requests 与java_opts的环境变量，可以加上-p获取对应集群的最近7天平均内存和CPU数值
+	6 获取容器的实际使用资源开销`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {

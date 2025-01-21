@@ -43,10 +43,6 @@ var resourceCmd = &cobra.Command{
 	},
 }
 
-/*
-可以供执行命令主机访问的 prometheus的地址 http://192.168.44.134:20248/
-*/
-
 func init() {
 	//rootCmd.AddCommand(resourceCmd)
 	resourceCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入想要查询的Node名字")
