@@ -1,0 +1,7 @@
+prometheus:
+    - kubeconfig: /root/.kube/config
+      url: http://prometheus.jcrose.com
+
+
+# 实际位置在 /root/.kube/jcrose-prometheus/prometheus.yaml 
+# 这里是不同k8s集群对应的prometheus地址，用于resource命令获取最近7天的资源开销
