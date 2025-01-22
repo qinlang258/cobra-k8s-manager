@@ -24,18 +24,18 @@ var resourceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 
-		var url string
+		var prometheusUrl string
 		if Prometheus {
-			url = prometheusplugin.GetPrometheusUrl(ctx, Kubeconfig)
-			fmt.Println("所使用的prometheus地址是： ", url)
+			prometheusUrl = prometheusplugin.GetPrometheusUrl(ctx, Kubeconfig)
+			fmt.Printf("所使用的prometheus地址是：%s:%s \n", prometheusUrl)
 		}
 		//读取 Prometheus地址
 
 		//如果需要输出prometheus实际开销
 		if Prometheus != false && Node == "" {
-			kube.AnalysisResourceAndLimitWithNamespace(ctx, Kubeconfig, Workload, Namespace, url, Export)
+			kube.AnalysisResourceAndLimitWithNamespace(ctx, Kubeconfig, Workload, Namespace, prometheusUrl, Export)
 		} else if Prometheus != false && Node != "" {
-			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, url, Export)
+			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, prometheusUrl, Export)
 
 		} else if Prometheus == false && Node == "" {
 			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name, Export)
