@@ -22,6 +22,7 @@ type PrometheusConfig struct {
 type Prometheus struct {
 	KubeConfig string `yaml:"kubeconfig"`
 	Url        string `yaml:"url"`
+	Port       int    `yaml:"port"`
 }
 
 type Cluster struct {
