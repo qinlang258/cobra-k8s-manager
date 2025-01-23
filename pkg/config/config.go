@@ -22,7 +22,7 @@ type PrometheusConfig struct {
 type Prometheus struct {
 	KubeConfig string `yaml:"kubeconfig"`
 	Url        string `yaml:"url"`
-	Port       int    `yaml:"port"`
+	Port       string `yaml:"port"`
 }
 
 type Cluster struct {
@@ -49,13 +49,31 @@ func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error
 		klog.Error(ctx, err.Error())
 	}
 
-	data, err := clientset.NetworkingV1().Ingresses("monitoring").Get(ctx, "prometheus", metav1.GetOptions{})
+	ingressObject, err := clientset.NetworkingV1().Ingresses("monitoring").Get(ctx, "prometheus", metav1.GetOptions{})
 	if err != nil {
 		klog.Error(ctx, err.Error())
 		return "", err
 	}
 
-	return "http://" + data.Spec.Rules[0].Host, nil
+	var port string
+
+	protocol := "http"
+	if ingressObject.Spec.TLS != nil {
+		protocol = "https"
+	}
+
+	switch protocol {
+	case "http":
+		port = "80"
+	case "https":
+		port = "443"
+	}
+
+	url := fmt.Sprintf("%s://%s:%s", protocol, ingressObject.Spec.Rules[0].Host, port)
+
+	fmt.Println(url)
+
+	return url, nil
 }
 
 func findYamlFiles(root string) ([]string, error) {
