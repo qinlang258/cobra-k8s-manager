@@ -75,8 +75,8 @@ func GetPrometheusUrl(ctx context.Context, file string) string {
 		if kubeconfig == file {
 			// 获取对应的 URL
 			url := item["url"].(string)
-			port := item["port"].(int)
-			return fmt.Sprintf("%s:%d", url, port)
+			port := item["port"].(string)
+			return fmt.Sprintf("%s:%s", url, port)
 		}
 	}
 
