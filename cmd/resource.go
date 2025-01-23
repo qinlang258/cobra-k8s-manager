@@ -26,8 +26,8 @@ var resourceCmd = &cobra.Command{
 
 		var prometheusUrl string
 		if Prometheus {
-			prometheusUrl = prometheusplugin.GetPrometheusUrl(ctx, Kubeconfig)
-			fmt.Printf("所使用的prometheus地址是：%s \n", prometheusUrl)
+			url, port := prometheusplugin.GetPrometheusUrl(ctx, Kubeconfig)
+			prometheusUrl = fmt.Sprintf("%s:%d", url, port)
 		}
 		//读取 Prometheus地址
 

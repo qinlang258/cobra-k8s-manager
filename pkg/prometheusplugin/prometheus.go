@@ -39,7 +39,7 @@ func NewProme(ip string, timeRace time.Duration) *PrometheusHandle {
 	}
 }
 
-func GetPrometheusUrl(ctx context.Context, file string) string {
+func GetPrometheusUrl(ctx context.Context, file string) (string, int) {
 	// 获取当前用户的家目录
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -58,7 +58,7 @@ func GetPrometheusUrl(ctx context.Context, file string) string {
 	err = viper.ReadInConfig()
 	if err != nil {
 		klog.Error(ctx, "Failed to read config: "+err.Error())
-		return ""
+		return "", 0
 	}
 
 	// 获取 prometheus 配置部分
@@ -66,7 +66,7 @@ func GetPrometheusUrl(ctx context.Context, file string) string {
 	err = viper.UnmarshalKey("prometheus", &prometheusConfig)
 	if err != nil {
 		klog.Error(ctx, "Failed to unmarshal prometheus config: "+err.Error())
-		return ""
+		return "", 0
 	}
 
 	// 遍历配置并查找匹配的 kubeconfig
@@ -75,13 +75,13 @@ func GetPrometheusUrl(ctx context.Context, file string) string {
 		if kubeconfig == file {
 			// 获取对应的 URL
 			url := item["url"].(string)
-			port := item["port"].(string)
-			return fmt.Sprintf("%s:%s", url, port)
+			port := item["port"].(int)
+			return url, port
 		}
 	}
 
 	// 如果没有找到匹配的 kubeconfig
-	return ""
+	return "", 0
 }
 
 func (p *PrometheusHandle) GetCpuUsage(container string) (*model.Sample, error) {
