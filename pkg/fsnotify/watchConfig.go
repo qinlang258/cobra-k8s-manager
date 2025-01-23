@@ -28,6 +28,7 @@ type PrometheusConfigs struct {
 type PrometheusConfig struct {
 	Kubeconfig string `yaml:"kubeconfig"`
 	URL        string `yaml:"url"`
+	Port       int    `yaml:"port"`
 }
 
 func watchKubeConfig(filePath string, watcher *fsnotify.Watcher) error {
@@ -67,6 +68,7 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 	}
 
 	var targetUrl string
+	var targetPort int
 	var prometheusConfigs PrometheusConfigs
 	err = yaml.Unmarshal(data, &prometheusConfigs)
 	if err != nil {
@@ -78,6 +80,7 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 		if strings.Contains(prometheusConfigs.Prometheus[i].Kubeconfig, clusterName) {
 			// 获取目标URL
 			targetUrl = prometheusConfigs.Prometheus[i].URL
+			targetPort = prometheusConfigs.Prometheus[i].Port
 			break
 		}
 	}
@@ -87,6 +90,7 @@ func updatePrometheusConfig(prometheusConfigPath, clusterName string) error {
 		if strings.Contains(prometheusConfigs.Prometheus[j].Kubeconfig, "/root/.kube/config") {
 			// 获取目标URL
 			prometheusConfigs.Prometheus[j].URL = targetUrl
+			prometheusConfigs.Prometheus[j].Port = targetPort
 			break
 		}
 	}
