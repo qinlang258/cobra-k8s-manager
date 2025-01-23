@@ -22,7 +22,7 @@ type PrometheusConfig struct {
 type Prometheus struct {
 	KubeConfig string `yaml:"kubeconfig"`
 	Url        string `yaml:"url"`
-	Port       string `yaml:"port"`
+	Port       int    `yaml:"port"`
 }
 
 type Cluster struct {
@@ -37,7 +37,7 @@ type PrometheusConfigs struct {
 	Prometheus []Prometheus
 }
 
-func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error) {
+func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, int, error) {
 	fmt.Println(kubeconfigPath)
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 	if err != nil {
@@ -52,10 +52,10 @@ func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error
 	ingressObject, err := clientset.NetworkingV1().Ingresses("monitoring").Get(ctx, "prometheus", metav1.GetOptions{})
 	if err != nil {
 		klog.Error(ctx, err.Error())
-		return "", err
+		return "", 0, err
 	}
 
-	var port string
+	var port int
 
 	protocol := "http"
 	if ingressObject.Spec.TLS != nil {
@@ -64,16 +64,14 @@ func getPrometheusUrl(ctx context.Context, kubeconfigPath string) (string, error
 
 	switch protocol {
 	case "http":
-		port = "80"
+		port = 80
 	case "https":
-		port = "443"
+		port = 443
 	}
 
-	url := fmt.Sprintf("%s://%s:%s", protocol, ingressObject.Spec.Rules[0].Host, port)
+	url := fmt.Sprintf("%s://%s", protocol, ingressObject.Spec.Rules[0].Host)
 
-	fmt.Println(url)
-
-	return url, nil
+	return url, port, nil
 }
 
 func findYamlFiles(root string) ([]string, error) {
@@ -126,13 +124,15 @@ func InitPrometheus(ctx context.Context, kubeconfigPath string) bool {
 		}
 
 		var prometheus Prometheus
+		var port int
 		prometheus.KubeConfig = file
-		url, err := getPrometheusUrl(ctx, file)
+		url, port, err := getPrometheusUrl(ctx, file)
 		if err != nil {
 			klog.Error(ctx, err.Error())
 			continue
 		}
 		prometheus.Url = url
+		prometheus.Port = port
 
 		pcs = append(pcs, prometheus)
 	}
