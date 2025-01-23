@@ -1,6 +1,7 @@
 prometheus:
     - kubeconfig: /root/.kube/config
       url: http://prometheus.jcrose.com
+      port: 80  
 
 
 # 实际位置在 /root/.kube/jcrose-prometheus/prometheus.yaml 
