@@ -366,7 +366,7 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
 					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					memoryRequests := pod.Spec.Containers[i].Resources.Requests.Memory().String()
 
 					nodename := pod.Spec.NodeName
 
@@ -414,7 +414,7 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 				cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
 				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				memoryRequests := pod.Spec.Containers[i].Resources.Requests.Memory().String()
 				nodename := pod.Spec.NodeName
 
 				memorySql := fmt.Sprintf(RssMemoryUsageTemplate, pod.Name, pod.Spec.Containers[i].Name, pod.Namespace)
@@ -520,7 +520,7 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 				cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
 				cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 				memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-				memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+				memoryRequests := pod.Spec.Containers[i].Resources.Requests.Memory().String()
 				nodename := pod.Spec.NodeName
 
 				var xmx, xms string
@@ -596,7 +596,7 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 					cpuLimit := pod.Spec.Containers[i].Resources.Limits.Cpu().String()
 					cpuRequets := pod.Spec.Containers[i].Resources.Requests.Cpu().String()
 					memoryLimit := pod.Spec.Containers[i].Resources.Limits.Memory().String()
-					memoryRequests := pod.Spec.Containers[i].Resources.Limits.Memory().String()
+					memoryRequests := pod.Spec.Containers[i].Resources.Requests.Memory().String()
 					nodename := pod.Spec.NodeName
 					var xmx, xms string
 
