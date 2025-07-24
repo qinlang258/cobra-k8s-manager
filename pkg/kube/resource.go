@@ -10,6 +10,7 @@ import (
 	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
 	"k8s-manager/pkg/prometheusplugin"
+	"k8s-manager/tools"
 
 	prov1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
@@ -386,6 +387,10 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 					}
 
 					deployMap["节点名"] = nodename
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+					}
 					deployMap["NAMESPACE"] = pod.Namespace
 					deployMap["POD_NAME"] = pod.Name
 					deployMap["容器名"] = pod.Spec.Containers[i].Name
@@ -452,6 +457,10 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 				}
 
 				deployMap["节点名"] = nodename
+				deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+				if err != nil {
+					klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+				}
 				deployMap["NAMESPACE"] = namespace
 				deployMap["POD_NAME"] = pod.Name
 				deployMap["容器名"] = pod.Spec.Containers[i].Name
@@ -558,6 +567,10 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 				}
 
 				deployMap["节点名"] = nodename
+				deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+				if err != nil {
+					klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+				}
 				deployMap["NAMESPACE"] = pod.Namespace
 				deployMap["POD_NAME"] = pod.Name
 				deployMap["容器名"] = pod.Spec.Containers[i].Name
@@ -633,6 +646,10 @@ func AnalysisResourceAndLimitWithNode(ctx context.Context, kubeconfig, workload,
 					}
 
 					deployMap["节点名"] = nodename
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+					}
 					deployMap["NAMESPACE"] = ns.Name
 					deployMap["POD_NAME"] = pod.Name
 					deployMap["容器名"] = pod.Spec.Containers[i].Name

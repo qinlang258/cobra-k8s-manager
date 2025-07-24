@@ -27,6 +27,7 @@ var ResourceTatleColumns []string = []string{
 
 var TopTatleColumns []string = []string{
 	"节点名",
+	"节点组名称",
 	"NAMESPACE",
 	"资源类型",
 	"资源名",
@@ -37,6 +38,7 @@ var TopTatleColumns []string = []string{
 
 var AnalysisNodeTatleColumns []string = []string{
 	"节点名",
+	"节点组名称",
 	"NAMESPACE",
 	"POD_NAME",
 	"容器名",
@@ -48,6 +50,7 @@ var AnalysisNodeTatleColumns []string = []string{
 
 var NodeTatleColumns []string = []string{
 	"节点名",
+	"节点组名称",
 	"节点IP",
 	"OS镜像",
 	"Kubelet版本",
@@ -62,6 +65,7 @@ var NodeTatleColumns []string = []string{
 
 var AnalysisCpuMemory []string = []string{
 	"节点名",
+	"节点组名称",
 	"NAMESPACE",
 	"POD_NAME",
 	"容器名",
@@ -121,6 +125,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["节点名"],
+				row["节点组名称"],
 				row["NAMESPACE"],
 				row["资源类型"],
 				row["资源名"],
@@ -138,6 +143,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["节点名"],
+				row["节点组名称"],
 				row["节点IP"],
 				row["OS镜像"],
 				row["Kubelet版本"],
@@ -159,6 +165,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["节点名"],
+				row["节点组名称"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
 				row["容器名"],
@@ -177,6 +184,7 @@ func TablePrint(tableName string, data []map[string]string) {
 		for _, row := range data {
 			table.Append([]string{
 				row["节点名"],
+				row["节点组名称"],
 				row["NAMESPACE"],
 				row["POD_NAME"],
 				row["容器名"],

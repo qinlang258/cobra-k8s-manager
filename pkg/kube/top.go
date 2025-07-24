@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
+	"k8s-manager/tools"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
@@ -36,6 +37,10 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 		if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 			deployMap := make(map[string]string)
 			deployMap["节点名"] = values.Spec.NodeName
+			deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, values)
+			if err != nil {
+				klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", values.Name, err))
+			}
 			deployMap["NAMESPACE"] = values.Namespace
 			deployMap["资源类型"] = values.OwnerReferences[0].Kind
 			deployMap["资源名"] = values.OwnerReferences[0].Name
@@ -100,6 +105,10 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node strin
 				if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 					deployMap := make(map[string]string)
 					deployMap["节点名"] = values.Spec.NodeName
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, values)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", values.Name, err))
+					}
 					deployMap["NAMESPACE"] = values.Namespace
 					deployMap["资源类型"] = values.OwnerReferences[0].Kind
 					deployMap["资源名"] = values.OwnerReferences[0].Name
@@ -135,6 +144,11 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node strin
 				if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 					deployMap := make(map[string]string)
 					deployMap["节点名"] = values.Spec.NodeName
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, values)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", values.Name, err))
+					}
+
 					deployMap["NAMESPACE"] = values.Namespace
 					deployMap["资源类型"] = values.OwnerReferences[0].Kind
 					deployMap["资源名"] = values.OwnerReferences[0].Name
@@ -197,6 +211,10 @@ func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig string, e
 	for _, pod := range podListItem.Items {
 		deployMap := make(map[string]string)
 		deployMap["节点名"] = pod.Spec.NodeName
+		deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+		if err != nil {
+			klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+		}
 		deployMap["NAMESPACE"] = pod.Namespace
 		deployMap["资源类型"] = pod.OwnerReferences[0].Kind
 		deployMap["资源名"] = pod.OwnerReferences[0].Name
@@ -256,6 +274,10 @@ func GetPodAllTopInfo(ctx context.Context, kubeconfig string) {
 			if node.Name == pod.Spec.NodeName {
 				deployMap := make(map[string]string)
 				deployMap["节点名"] = pod.Spec.NodeName
+				deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+				if err != nil {
+					klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+				}
 				deployMap["NAMESPACE"] = pod.Namespace
 				deployMap["资源类型"] = pod.OwnerReferences[0].Kind
 				deployMap["资源名"] = pod.OwnerReferences[0].Name
@@ -313,6 +335,10 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 				if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 					deployMap := make(map[string]string)
 					deployMap["节点名"] = values.Spec.NodeName
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, values)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", values.Name, err))
+					}
 					deployMap["NAMESPACE"] = values.Namespace
 					deployMap["资源类型"] = values.OwnerReferences[0].Kind
 					deployMap["资源名"] = values.OwnerReferences[0].Name
@@ -348,6 +374,10 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 				if values.OwnerReferences[0].Kind == "StatefulSet" || values.OwnerReferences[0].Kind == "DaemonSet" || values.OwnerReferences[0].Kind == "ReplicaSet" {
 					deployMap := make(map[string]string)
 					deployMap["节点名"] = values.Spec.NodeName
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, values)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", values.Name, err))
+					}
 					deployMap["NAMESPACE"] = values.Namespace
 					deployMap["资源类型"] = values.OwnerReferences[0].Kind
 					deployMap["资源名"] = values.OwnerReferences[0].Name

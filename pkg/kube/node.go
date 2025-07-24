@@ -34,6 +34,7 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string, export bool) 
 	for _, values := range nodeList.Items {
 		deployMap := make(map[string]string)
 		deployMap["节点名"] = values.Name
+		deployMap["节点组名称"] = values.Labels["eks.amazonaws.com/nodegroup"]
 		deployMap["OS镜像"] = values.Status.NodeInfo.OSImage
 
 		deployMap["Kubelet版本"] = values.Status.NodeInfo.KubeletVersion

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
+	"k8s-manager/tools"
 	"sort"
 
 	"strconv"
@@ -55,6 +56,10 @@ func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string, expo
 				for i := 0; i < len(podMetrics.Containers); i++ {
 					deployMap := make(map[string]string)
 					deployMap["节点名"] = nodeName
+					deployMap["节点组名称"], err = tools.GetNodeGroupNameFromPod(ctx, client, pod)
+					if err != nil {
+						klog.Error(ctx, fmt.Sprintf("Error getting node group name for pod %s: %v", pod.Name, err))
+					}
 					deployMap["NAMESPACE"] = pod.Namespace
 					deployMap["POD_NAME"] = pod.Name
 					deployMap["容器名"] = podMetrics.Containers[i].Name
