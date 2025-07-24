@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"k8s-manager/pkg/excel"
 	"k8s-manager/pkg/mtable"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -34,7 +35,13 @@ func GetNodeInfo(ctx context.Context, nodeName, kubeconfig string, export bool) 
 	for _, values := range nodeList.Items {
 		deployMap := make(map[string]string)
 		deployMap["节点名"] = values.Name
-		deployMap["节点组名称"] = values.Labels["eks.amazonaws.com/nodegroup"]
+
+		for _, label := range values.Labels {
+			if strings.Contains(label, "nodegroup") {
+				deployMap["节点组名称"] = values.Labels["eks.amazonaws.com/nodegroup"]
+			}
+		}
+
 		deployMap["OS镜像"] = values.Status.NodeInfo.OSImage
 
 		deployMap["Kubelet版本"] = values.Status.NodeInfo.KubeletVersion

@@ -3,6 +3,7 @@ package tools
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -21,9 +22,10 @@ func GetNodeGroupNameFromPod(ctx context.Context, client *kubernetes.Clientset, 
 		return nodeGroupName, nil
 	}
 
-	// 对于自管理节点组，可能使用不同的标签
-	if nodeGroupName, ok := node.Labels["eks.amazonaws.com/nodegroup"]; ok {
-		return nodeGroupName, nil
+	for _, values := range node.Labels {
+		if strings.Contains(values, "nodegroup") {
+			return values, nil
+		}
 	}
 
 	return "", fmt.Errorf("node group name not found in node labels")
