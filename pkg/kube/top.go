@@ -81,7 +81,9 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 				usedCpuCores := float64(cpuUsage.MilliValue())
 
 				deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+				deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 				deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+				deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 			}
 
 			ItemList = append(ItemList, deployMap)
@@ -156,7 +158,9 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node, labe
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
 						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+						deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -206,7 +210,9 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node, labe
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
 						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+						deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -280,7 +286,9 @@ func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig, labelSel
 			usedCpuCores := float64(cpuUsage.MilliValue())
 
 			deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+			deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 			deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+			deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 		}
 
 		ItemList = append(ItemList, deployMap)
@@ -350,7 +358,9 @@ func GetPodAllTopInfo(ctx context.Context, kubeconfig string) {
 					usedCpuCores := float64(cpuUsage.MilliValue())
 
 					deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+					deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 					deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+					deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 				}
 
 				ItemList = append(ItemList, deployMap)
@@ -420,7 +430,9 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
 						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+						deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -467,7 +479,9 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
 						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
+						deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/totalCpuCores)*100, totalCpuCores/1000)
 						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 					}
 
 					ItemList = append(ItemList, deployMap)

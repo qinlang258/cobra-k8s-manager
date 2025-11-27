@@ -32,8 +32,10 @@ var TopTatleColumns []string = []string{
 	"资源类型",
 	"资源名",
 	"POD_NAME",
-	"已使用的CPU",
-	"已使用的内存",
+	"当前已使用的CPU",
+	"CPU使用占服务器的百分比",
+	"当前已使用的内存",
+	"内存使用占服务器的百分比",
 }
 
 var AnalysisNodeTatleColumns []string = []string{
@@ -131,7 +133,9 @@ func TablePrint(tableName string, data []map[string]string) {
 				row["资源名"],
 				row["POD_NAME"],
 				row["当前已使用的CPU"],
+				row["CPU使用占服务器的百分比"],
 				row["当前已使用的内存"],
+				row["内存使用占服务器的百分比"],
 			})
 		}
 	} else if tableName == "node" {
