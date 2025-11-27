@@ -8,12 +8,11 @@ import (
 	"k8s-manager/tools"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog/v2"
 )
 
 // 获取节点总资源信息的辅助函数
-func getNodeResources(ctx context.Context, client kubernetes.Interface, nodeName string) (float64, float64, error) {
+func getNodeResources(ctx context.Context, client *ClientSet, nodeName string) (float64, float64, error) {
 	nodeData, err := client.CoreV1().Nodes().Get(ctx, nodeName, metav1.GetOptions{})
 	if err != nil {
 		return 0, 0, err
@@ -66,13 +65,6 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 				continue
 			}
 
-			// 获取节点总资源信息
-			totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, values.Spec.NodeName)
-			if err != nil {
-				klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", values.Spec.NodeName, err))
-				totalCpuCores, totalMemoryMi = 0, 0
-			}
-
 			// 获取 CPU 和内存使用数据
 			for i := 0; i < len(podMetrics.Containers); i++ {
 				cpuUsage := podMetrics.Containers[i].Usage.Cpu()
@@ -80,8 +72,8 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 				usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 				usedCpuCores := float64(cpuUsage.MilliValue())
 
-				deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
-				deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+				deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+				deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 			}
 
 			ItemList = append(ItemList, deployMap)
@@ -191,13 +183,6 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node, labe
 						continue
 					}
 
-					// 获取节点总资源信息
-					totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, values.Spec.NodeName)
-					if err != nil {
-						klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", values.Spec.NodeName, err))
-						totalCpuCores, totalMemoryMi = 0, 0
-					}
-
 					// 获取 CPU 和内存使用数据
 					for i := 0; i < len(podMetrics.Containers); i++ {
 						cpuUsage := podMetrics.Containers[i].Usage.Cpu()
@@ -205,8 +190,8 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node, labe
 						usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
-						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
-						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -265,13 +250,6 @@ func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig, labelSel
 			continue
 		}
 
-		// 获取节点总资源信息
-		totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, pod.Spec.NodeName)
-		if err != nil {
-			klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", pod.Spec.NodeName, err))
-			totalCpuCores, totalMemoryMi = 0, 0
-		}
-
 		// 获取 CPU 和内存使用数据
 		for i := 0; i < len(podMetrics.Containers); i++ {
 			cpuUsage := podMetrics.Containers[i].Usage.Cpu()
@@ -279,8 +257,8 @@ func GetPodTopInfoWithCurrentNamespace(ctx context.Context, kubeconfig, labelSel
 			usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 			usedCpuCores := float64(cpuUsage.MilliValue())
 
-			deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
-			deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+			deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+			deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 		}
 
 		ItemList = append(ItemList, deployMap)
@@ -336,9 +314,9 @@ func GetPodAllTopInfo(ctx context.Context, kubeconfig string) {
 				}
 
 				// 获取节点总资源信息
-				totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, pod.Spec.NodeName)
+				totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, values.Spec.NodeName)
 				if err != nil {
-					klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", pod.Spec.NodeName, err))
+					klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", values.Spec.NodeName, err))
 					totalCpuCores, totalMemoryMi = 0, 0
 				}
 
@@ -405,13 +383,6 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						continue
 					}
 
-					// 获取节点总资源信息
-					totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, values.Spec.NodeName)
-					if err != nil {
-						klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", values.Spec.NodeName, err))
-						totalCpuCores, totalMemoryMi = 0, 0
-					}
-
 					// 获取 CPU 和内存使用数据
 					for i := 0; i < len(podMetrics.Containers); i++ {
 						cpuUsage := podMetrics.Containers[i].Usage.Cpu()
@@ -419,8 +390,8 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
-						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
-						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
 					}
 
 					ItemList = append(ItemList, deployMap)
@@ -452,13 +423,6 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						continue
 					}
 
-					// 获取节点总资源信息
-					totalCpuCores, totalMemoryMi, err := getNodeResources(ctx, client, values.Spec.NodeName)
-					if err != nil {
-						klog.Error(ctx, fmt.Sprintf("Error getting node resources for %s: %v", values.Spec.NodeName, err))
-						totalCpuCores, totalMemoryMi = 0, 0
-					}
-
 					// 获取 CPU 和内存使用数据
 					for i := 0; i < len(podMetrics.Containers); i++ {
 						cpuUsage := podMetrics.Containers[i].Usage.Cpu()
@@ -466,8 +430,8 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 						usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 						usedCpuCores := float64(cpuUsage.MilliValue())
 
-						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, totalCpuCores)
-						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+						deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
+						deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fMi", usedMemoryMi)
 					}
 
 					ItemList = append(ItemList, deployMap)

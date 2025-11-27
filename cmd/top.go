@@ -18,17 +18,17 @@ var topCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
 		if Namespace == "" && Node == "" {
-			kube.GetPodTopInfoWithCurrentNamespace(ctx, Kubeconfig, Export)
+			kube.GetPodTopInfoWithCurrentNamespace(ctx, Kubeconfig, LabelSelector, Export)
 		}
 
 		if Namespace != "" && Node == "" {
-			kube.GetPodTopInfoWithNamespace(ctx, Kubeconfig, Workload, Namespace, Export)
+			kube.GetPodTopInfoWithNamespace(ctx, Kubeconfig, Workload, Namespace, LabelSelector, Export)
 		}
 		if Node != "" && Namespace == "" {
-			kube.GetPodTopInfoWithNode(ctx, Kubeconfig, Workload, Node, Export)
+			kube.GetPodTopInfoWithNode(ctx, Kubeconfig, Workload, Node, LabelSelector, Export)
 		}
 		if Node != "" && Namespace != "" {
-			kube.GetPodTopInfoWithNamespaceAndNode(ctx, Kubeconfig, Workload, Node, Namespace, Export)
+			kube.GetPodTopInfoWithNamespaceAndNode(ctx, Kubeconfig, Workload, Node, Namespace, LabelSelector, Export)
 		}
 
 	},
@@ -39,4 +39,5 @@ func init() {
 	topCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
 	topCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
 	topCmd.PersistentFlags().StringVarP(&Node, "node", "", "", "请输入 节点名空间，如果不填写则输出该Node下的镜像")
+	topCmd.PersistentFlags().StringVarP(&LabelSelector, "selector", "l", "", "标签选择器，例如: app=nginx,version=v1")
 }

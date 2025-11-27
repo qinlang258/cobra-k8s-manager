@@ -46,7 +46,7 @@ func FormatData(result model.Value, warnings prov1.Warnings, err error) string {
 	return num_data
 }
 
-func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespace, name string, export bool) {
+func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespace, name, labelSelector string, export bool) {
 	client, err := NewClientset(kubeconfig)
 	if err != nil {
 		klog.Error(err)
@@ -57,7 +57,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 	switch workload {
 	case "all":
 		if namespace != "all" {
-			deploymentLtems, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+			deploymentLtems, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -77,7 +79,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				}
 			}
 
-			stsItems, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
+			stsItems, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -97,7 +101,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				}
 			}
 
-			dsItems, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
+			dsItems, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -123,7 +129,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				klog.Error(ctx, err.Error())
 			}
 			for _, ns := range nsList.Items {
-				deployItems, err := client.AppsV1().Deployments(ns.Name).List(ctx, metav1.ListOptions{})
+				deployItems, err := client.AppsV1().Deployments(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -143,7 +151,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					}
 				}
 
-				stsItems, err := client.AppsV1().StatefulSets(ns.Name).List(ctx, metav1.ListOptions{})
+				stsItems, err := client.AppsV1().StatefulSets(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -163,7 +173,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 					}
 				}
 
-				dsItems, err := client.AppsV1().DaemonSets(ns.Name).List(ctx, metav1.ListOptions{})
+				dsItems, err := client.AppsV1().DaemonSets(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -188,7 +200,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 
 	case "deployment":
 		if namespace != "all" {
-			items, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+			items, err := client.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -212,7 +226,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				klog.Error(ctx, err.Error())
 			}
 			for _, ns := range nsList.Items {
-				items, err := client.AppsV1().Deployments(ns.Name).List(ctx, metav1.ListOptions{})
+				items, err := client.AppsV1().Deployments(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -235,7 +251,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 		}
 	case "sts":
 		if namespace != "all" {
-			items, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
+			items, err := client.AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -260,7 +278,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				klog.Error(ctx, err.Error())
 			}
 			for _, ns := range nsList.Items {
-				items, err := client.AppsV1().StatefulSets(ns.Name).List(ctx, metav1.ListOptions{})
+				items, err := client.AppsV1().StatefulSets(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -283,7 +303,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 		}
 	case "ds":
 		if namespace != "all" {
-			items, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
+			items, err := client.AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{
+				LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -308,7 +330,9 @@ func GetWorkloadLimitRequests(ctx context.Context, kubeconfig, workload, namespa
 				klog.Error(ctx, err.Error())
 			}
 			for _, ns := range nsList.Items {
-				items, err := client.AppsV1().DaemonSets(ns.Name).List(ctx, metav1.ListOptions{})
+				items, err := client.AppsV1().DaemonSets(ns.Name).List(ctx, metav1.ListOptions{
+					LabelSelector: labelSelector,
+				})
 				if err != nil {
 					klog.Error(ctx, err.Error())
 				}
@@ -356,7 +380,9 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 		}
 
 		for _, ns := range nsList.Items {
-			podList, err := client.CoreV1().Pods(ns.Name).List(ctx, metav1.ListOptions{})
+			podList, err := client.CoreV1().Pods(ns.Name).List(ctx, metav1.ListOptions{
+				// LabelSelector: labelSelector,
+			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
 			}
@@ -408,7 +434,9 @@ func AnalysisResourceAndLimitWithNamespace(ctx context.Context, kubeconfig, work
 			}
 		}
 	default:
-		podList, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
+		podList, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{
+			// LabelSelector: labelSelector,
+		})
 		if err != nil {
 			klog.Error(ctx, err.Error())
 		}

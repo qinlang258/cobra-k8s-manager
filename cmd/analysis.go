@@ -13,6 +13,7 @@ import (
 // analysisCmd represents the analysis command
 var analysisCmd = &cobra.Command{
 	Use:     "analysis",
+	Aliases: []string{"as"},
 	Short:   "分析某一节点的资源使用情况",
 	Long:    "分析某一节点的资源使用情况",
 	Example: "./k8s-manager analysis <节点名>",

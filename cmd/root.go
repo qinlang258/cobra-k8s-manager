@@ -14,8 +14,8 @@ import (
 var command string
 
 var (
-	Workload, Namespace, Name, Kubeconfig, Node, Analysis, KubeconfigPath string
-	Export                                                                bool
+	Workload, Namespace, Name, Kubeconfig, Node, Analysis, KubeconfigPath, LabelSelector string
+	Export                                                                                bool
 )
 
 // rootCmd represents the base command when called without any subcommands

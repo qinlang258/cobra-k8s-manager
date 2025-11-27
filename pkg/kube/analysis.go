@@ -38,6 +38,12 @@ func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string, expo
 	totalMemoryMi := float64(nodeData.Status.Allocatable.Memory().Value()) / 1024 / 1024
 	totalCpuCores := nodeData.Status.Allocatable.Cpu().MilliValue()
 
+	// 显示节点总资源信息
+	fmt.Printf("\n=== 节点 %s 资源信息 ===\n", nodeName)
+	fmt.Printf("总CPU: %.0fm (%.1f cores)\n", float64(totalCpuCores), float64(totalCpuCores)/1000)
+	fmt.Printf("总内存: %.0fMi (%.1fGi)\n", totalMemoryMi, totalMemoryMi/1024)
+	fmt.Printf("========================================\n\n")
+
 	podList, _ := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{})
 	for _, pod := range podList.Items {
 		if pod.Spec.NodeName == nodeName {
@@ -68,10 +74,10 @@ func AnalysisNodeWithNode(ctx context.Context, kubeconfig, nodeName string, expo
 					usedMemoryMi := float64(memoryUsage.Value()) / 1024 / 1024
 					usedCpuCores := float64(cpuUsage.MilliValue())
 
-					deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm", usedCpuCores)
-					deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedCpuCores/float64(totalCpuCores))*100)
-					deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm", usedMemoryMi)
-					deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%%", (usedMemoryMi/totalMemoryMi)*100)
+					deployMap["当前已使用的CPU"] = fmt.Sprintf("%.2fm (总%.0fm)", usedCpuCores, float64(totalCpuCores))
+					deployMap["CPU使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1f cores)", (usedCpuCores/float64(totalCpuCores))*100, float64(totalCpuCores)/1000)
+					deployMap["当前已使用的内存"] = fmt.Sprintf("%.2fm (总%.0fMi)", usedMemoryMi, totalMemoryMi)
+					deployMap["内存使用占服务器的百分比"] = fmt.Sprintf("%.2f%% (总%.1fGi)", (usedMemoryMi/totalMemoryMi)*100, totalMemoryMi/1024)
 					ItemList = append(ItemList, deployMap)
 				}
 			}

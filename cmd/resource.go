@@ -39,7 +39,7 @@ var resourceCmd = &cobra.Command{
 			kube.AnalysisResourceAndLimitWithNode(ctx, Kubeconfig, Workload, Namespace, Node, prometheusUrl, Export)
 
 		} else if Prometheus == false && Node == "" {
-			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name, Export)
+			kube.GetWorkloadLimitRequests(ctx, Kubeconfig, Workload, Namespace, Name, LabelSelector, Export)
 		}
 	},
 }
@@ -51,4 +51,5 @@ func init() {
 	resourceCmd.PersistentFlags().BoolVarP(&Prometheus, "prometheus", "p", false, "需要分析的话，在配置文件填写prometheus的地址，仅支持当前集群的状态查询")
 	resourceCmd.PersistentFlags().StringVarP(&Namespace, "namespace", "n", "all", "请输入 namespace空间，如果不填写则输出所有空间下的镜像")
 	resourceCmd.PersistentFlags().StringVarP(&Workload, "workload", "", "all", "请输入 workload的种类，如果不填写输出所有类型的镜像")
+	resourceCmd.PersistentFlags().StringVarP(&LabelSelector, "selector", "l", "", "标签选择器，例如: app=nginx,version=v1")
 }
