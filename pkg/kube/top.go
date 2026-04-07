@@ -42,6 +42,7 @@ func GetPodTopInfoWithNamespaceAndNode(ctx context.Context, kubeconfig, workload
 
 	deploymentItems, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{
 		FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
+		LabelSelector: labelSelector,
 	})
 	if err != nil {
 		klog.Error(ctx, err.Error())
@@ -119,6 +120,7 @@ func GetPodTopInfoWithNode(ctx context.Context, kubeconfig, workload, node, labe
 		if node != "all" {
 			deploymentItems, err := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{
 				FieldSelector: fmt.Sprintf("spec.nodeName=%s", node),
+				LabelSelector: labelSelector,
 			})
 			if err != nil {
 				klog.Error(ctx, err.Error())
@@ -440,7 +442,7 @@ func GetPodTopInfoWithNamespace(ctx context.Context, kubeconfig, workload, names
 			}
 
 		} else if namespace == "all" {
-			deploymentItems, err := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{})
+			deploymentItems, err := client.CoreV1().Pods("").List(ctx, metav1.ListOptions{LabelSelector: labelSelector})
 			if err != nil {
 				klog.Error(ctx, "Error listing pods in namespace ", err.Error())
 			}
